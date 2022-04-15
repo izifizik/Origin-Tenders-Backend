@@ -1,7 +1,6 @@
 package domain
 
 type Bot struct {
-
 }
 
-type AccountID
+//type AccountID
