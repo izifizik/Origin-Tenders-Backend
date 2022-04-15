@@ -24,6 +24,7 @@ func (r repo) SaveToken(ctx context.Context, ID string, file string) error {
 	return nil
 }
 
+
 func (r repo) GetTgUser(name string) (domain.TelegramUser, string, error) {
 	var tgUser domain.TelegramUser
 
@@ -63,3 +64,15 @@ func (r repo) CreateNewTgUser(id int64, name string, token string) (domain.Teleg
 
 	return tgUser, "success", nil
 }
+
+//func (r repo) ProofToken(ctx context.Context, ID string, file string) (bool, error) {
+//	filter := bson.M{"tg": name}
+//
+//	err := clubsCollection.FindOne(context.Background(), filter).Decode(&club)
+//	if err != nil {
+//		fmt.Println(err)
+//		return model.Club{}
+//	}
+//	return club
+//}
+
