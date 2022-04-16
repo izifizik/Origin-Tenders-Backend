@@ -106,6 +106,8 @@ func Run(repo mongodb.Repository) {
 					fmt.Println(err)
 				}
 
+				fmt.Println(update.SentFrom().UserName + " !!!!!!!!!!!!!!!!!!!")
+
 				if status == "invalid token" {
 					msg.Text = "вы успешно связались с сервисом, ждите новостей!!!"
 					bot.Send(msg)
