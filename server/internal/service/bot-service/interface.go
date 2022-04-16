@@ -9,6 +9,8 @@ import (
 type BotService interface {
 	CreateOrder(order domain.Order) error
 
+	GetTgUsers() ([]domain.TelegramUser, error)
+
 	GetSiteUserByName(name string) (domain.User, error)
 	CreateSiteUser(user domain.User) error
 

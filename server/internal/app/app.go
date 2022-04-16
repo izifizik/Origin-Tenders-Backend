@@ -10,8 +10,6 @@ import (
 	"origin-tender-backend/server/internal/delivery/http/api/bot"
 	"origin-tender-backend/server/internal/repository/mongodb"
 	botService "origin-tender-backend/server/internal/service/bot-service"
-	teleBotService "origin-tender-backend/server/internal/service/teleg-bot-service"
-
 	"os"
 	"os/signal"
 	"syscall"
@@ -42,7 +40,7 @@ func Run() error {
 	//
 	//fmt.Println(user.ID, err)
 
-	go teleBotService.Run(repo)
+	//go teleBotService.Run(repo)
 
 	handler := bot.NewBotHandler(service)
 

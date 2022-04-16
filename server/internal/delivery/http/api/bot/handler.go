@@ -1,6 +1,7 @@
 package bot
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -11,6 +12,7 @@ import (
 	"origin-tender-backend/server/internal/delivery/http/api"
 	"origin-tender-backend/server/internal/domain"
 	botService "origin-tender-backend/server/internal/service/bot-service"
+	"origin-tender-backend/server/internal/service/teleg-bot-service/actions"
 	"strconv"
 	"time"
 )
@@ -57,6 +59,41 @@ func (h *handler) Register(router *gin.Engine) {
 	router.POST("/order", func(context *gin.Context) {
 		h.CreateOrder(context, h.botService)
 	})
+
+	router.POST("/test/event", func(context *gin.Context) {
+		h.RaiseEvent(context, h.botService)
+	})
+
+}
+
+func (h *handler) RaiseEvent(c *gin.Context, s botService.BotService) {
+	var event domain.ServiceEvent
+	c.ShouldBindJSON(&event)
+
+	if event.Type == "tender" {
+		var tender domain.Tender
+		err := json.Unmarshal([]byte(event.Data), &tender)
+		if err != nil {
+			fmt.Println(err)
+		}
+		//fmt.Println(tender.Name)
+
+		users, err := s.GetTgUsers()
+
+		for _, u := range users {
+			err := actions.SendAcceptParticipationInTender(u.UserId, tender.Name, tender.StartPrice)
+			if err != nil {
+				fmt.Println(err)
+			}
+		}
+
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			fmt.Println(len(users))
+		}
+
+	}
 
 }
 
