@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"origin-tender-backend/websocket/wsModels"
+	"strings"
 )
 
 // Copyright 2013 The Gorilla WebSocket Authors. All rights reserved.
@@ -36,21 +37,14 @@ func SendNotification(writer http.ResponseWriter, request *http.Request) {
 }
 
 // return userId
-func initRead(w http.ResponseWriter, r *http.Request) (string, *websocket.Conn, error) {
+func initRead(w http.ResponseWriter, r *http.Request) (*websocket.Conn, error) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
-		return "", conn, err
+		return conn, err
 	}
 
-	_, message, err := conn.ReadMessage()
-	if err != nil {
-		log.Println("Error during message reading:", err)
-		return "", conn, err
-	}
-
-	userId := string(message[:])
-	return userId, conn, nil
+	return conn, nil
 }
 
 func Run() {
@@ -62,11 +56,14 @@ func Run() {
 		serveWs(hub, w, r)
 	})
 
-	http.HandleFunc("/ws/notification", func(writer http.ResponseWriter, request *http.Request) {
+	http.HandleFunc("/ws/notification/", func(writer http.ResponseWriter, request *http.Request) {
 
-		userId, conn, err := initRead(writer, request)
+		routeNames := strings.Split(request.URL.Path, "/")
+		userId := routeNames[len(routeNames)-1]
+
+		conn, err := initRead(writer, request)
 		if err != nil {
-			fmt.Println()
+			fmt.Println(err)
 		}
 
 		if userId != "" {
@@ -80,11 +77,14 @@ func Run() {
 
 	})
 
-	http.HandleFunc("/ws/bets", func(writer http.ResponseWriter, request *http.Request) {
+	http.HandleFunc("/ws/bets/", func(writer http.ResponseWriter, request *http.Request) {
 
-		userId, conn, err := initRead(writer, request)
+		routeNames := strings.Split(request.URL.Path, "/")
+		userId := routeNames[len(routeNames)-1]
+
+		conn, err := initRead(writer, request)
 		if err != nil {
-			fmt.Println()
+			fmt.Println(err)
 		}
 
 		if userId != "" {
@@ -99,11 +99,14 @@ func Run() {
 
 	})
 
-	http.HandleFunc("/ws/session", func(writer http.ResponseWriter, request *http.Request) {
+	http.HandleFunc("/ws/session/", func(writer http.ResponseWriter, request *http.Request) {
 
-		userId, conn, err := initRead(writer, request)
+		routeNames := strings.Split(request.URL.Path, "/")
+		userId := routeNames[len(routeNames)-1]
+
+		conn, err := initRead(writer, request)
 		if err != nil {
-			fmt.Println()
+			fmt.Println(err)
 		}
 
 		if userId != "" {

@@ -24,6 +24,7 @@ type Config struct {
 		TgUserCollection     *mongo.Collection
 		TenderCollection     *mongo.Collection
 		OrderCollection      *mongo.Collection
+		BotCollection        *mongo.Collection
 	}
 }
 
@@ -46,6 +47,7 @@ func NewConfig() Config {
 		instance.Database.Client, err = mongoConnection(mongoURI)
 		instance.Database.TPCollection = instance.Database.Client.Database("Origin-Tenders").Collection(mongoTokenProofCollection)
 
+		instance.Database.BotCollection = instance.Database.Client.Database("Origin-Tenders").Collection("Bot")
 		instance.Database.TgUserCollection = instance.Database.Client.Database("Origin-Tenders").Collection("TelegramUsers")
 		instance.Database.ProofTokenCollection = instance.Database.Client.Database("Origin-Tenders").Collection("token-proof")
 		instance.Database.UserCollection = instance.Database.Client.Database("Origin-Tenders").Collection("Users")

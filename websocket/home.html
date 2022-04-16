@@ -10,19 +10,19 @@
 </body>
 <script>
     window.onload = () => {
-        let betsConn = new WebSocket('ws://localhost:8081/ws/bets')
-        let betsNotifs = new WebSocket('ws://localhost:8081/ws/notification')
-        let betsSessions = new WebSocket('ws://localhost:8081/ws/session')
+        let betsConn = new WebSocket('ws://localhost:8081/ws/bets/123')
+        let betsNotifs = new WebSocket('ws://localhost:8081/ws/notification/123')
+        let betsSessions = new WebSocket('ws://localhost:8081/ws/session/123')
 
-        betsConn.onopen = () => {
-            betsConn.send("123")
-        }
-        betsNotifs.onopen = () => {
-            betsNotifs.send("123")
-        }
-        betsSessions.onopen = () => {
-            betsSessions.send("123")
-        }
+        // betsConn.onopen = () => {
+        //     betsConn.send("123")
+        // }
+        // betsNotifs.onopen = () => {
+        //     betsNotifs.send("123")
+        // }
+        // betsSessions.onopen = () => {
+        //     betsSessions.send("123")
+        // }
 
 
         betsConn.onmessage = (msg) => {

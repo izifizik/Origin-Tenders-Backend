@@ -17,14 +17,16 @@ type repo struct {
 	tgUserCollection     *mongo.Collection
 	tendersCollection    *mongo.Collection
 	ordersCollection     *mongo.Collection
+	botCollection        *mongo.Collection
 }
 
 func NewRepo(client *mongo.Client, tpCollection, userCollection, proofTokenCollection,
-	tgUserCollection, tenderCollection *mongo.Collection, ordersCollection *mongo.Collection) Repository {
+	tgUserCollection, tenderCollection *mongo.Collection,
+	ordersCollection *mongo.Collection, botCollection *mongo.Collection) Repository {
 	return &repo{
 		client, tpCollection, userCollection,
 		proofTokenCollection, tgUserCollection,
-		tenderCollection, ordersCollection,
+		tenderCollection, ordersCollection, botCollection,
 	}
 }
 

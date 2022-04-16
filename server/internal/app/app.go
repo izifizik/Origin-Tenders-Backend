@@ -40,7 +40,7 @@ func Run() error {
 	fmt.Println(cfg.App.Port, cfg.App.Host)
 	repo := mongodb.NewRepo(cfg.Database.Client, cfg.Database.TPCollection, cfg.Database.UserCollection,
 		cfg.Database.ProofTokenCollection, cfg.Database.TgUserCollection, cfg.Database.TenderCollection,
-		cfg.Database.OrderCollection)
+		cfg.Database.OrderCollection, cfg.Database.BotCollection)
 
 	service := botService.NewBotService(repo)
 
