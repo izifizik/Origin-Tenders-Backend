@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"log"
 	"math/rand"
 	"net/http"
 	"origin-tender-backend/server/internal/delivery/http/api"
@@ -24,7 +26,24 @@ func NewBotHandler(service botService.BotService) api.Handler {
 	return &handler{service}
 }
 
+func CORSMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+
+		c.Next()
+	}
+}
+
 func (h *handler) Register(router *gin.Engine) {
+	router.Use(CORSMiddleware())
 	router.POST("/bot/generateToken", func(context *gin.Context) {
 		h.GenerateToken(context)
 	})
@@ -77,6 +96,21 @@ func (h *handler) RaiseEvent(c *gin.Context, s botService.BotService) {
 
 }
 
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+}
+
+func (h *handler) NotificationWS(c *gin.Context) {
+	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		log.Println(err.Error())
+		return
+	}
+	// go + уведы в тг бота
+	h.botService.SentNotification(conn)
+}
+
 func (h *handler) CreateOrder(c *gin.Context, s botService.BotService) {
 	var order domain.Order
 	err := c.ShouldBindJSON(&order)
@@ -92,11 +126,14 @@ func (h *handler) CreateOrder(c *gin.Context, s botService.BotService) {
 	c.JSON(200, gin.H{})
 }
 
+// какую статистику стоит показывать по тендерам в которых учавствует бот от /tenders
+// это активные тендеры бота
+
 func (h *handler) BotSetOptions(c *gin.Context) {
 	// создаем горутину которая крутит этого бота в тендере с определенными настройками
 }
 
-func (h *handler) Aproof(c *gin.Context) {
+func (h *handler) Aproove(c *gin.Context) {
 	// когда автоматически бот уже не может подтверждать сделки будет вызыватсья этот поинт
 	// Работает следующим образом
 	// Бот в фоне ждет подтверждения => надо реализовать где то подтверждение транзакции
@@ -105,10 +142,9 @@ func (h *handler) Aproof(c *gin.Context) {
 
 func (h *handler) GetUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
-		"ID":            primitive.NewObjectID(),
-		"Name":          "Тетя Вася",
-		"Notifications": domain.Notifications{TgID: "asd"},
-		"Filters":       []string{"filter1", "filter2"},
+		"ID":      primitive.NewObjectID(),
+		"Name":    "Тетя Вася",
+		"Filters": []string{"filter1", "filter2"},
 		"TendersHistory": []domain.Tender{
 			{
 				ID:           primitive.NewObjectID(),
@@ -358,7 +394,7 @@ func (h *handler) GenerateToken2(c *gin.Context, s botService.BotService) {
 	//token := h.botService.GenerateToken(dto.Type)
 	rand.Seed(time.Now().Unix())
 
-	seed := strconv.Itoa(int(rand.Int()))
+	seed := strconv.Itoa(rand.Int())
 
 	user, err = s.GetSiteUserByName(user.Name)
 

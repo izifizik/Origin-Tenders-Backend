@@ -1,13 +1,8 @@
 package domain
 
 type User struct {
-	ID   string `bson:"_id"`
-	Name string
-	Notifications
+	ID             string `bson:"_id"`
+	Name           string
 	Filters        []string
 	TendersHistory []Tender
-}
-
-type Notifications struct {
-	TgID string
 }

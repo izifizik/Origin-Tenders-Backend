@@ -1,6 +1,9 @@
 package botService
 
-import "origin-tender-backend/server/internal/domain"
+import (
+	"github.com/gorilla/websocket"
+	"origin-tender-backend/server/internal/domain"
+)
 
 type BotService interface {
 	CreateOrder(order domain.Order) error
@@ -14,4 +17,6 @@ type BotService interface {
 	ProofToken(ID string, token string) error
 
 	CreateTgToken(name string, token string, siteId string) error
+
+	SentNotification(conn *websocket.Conn)
 }

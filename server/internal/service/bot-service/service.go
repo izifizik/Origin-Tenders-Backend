@@ -3,7 +3,10 @@ package botService
 import (
 	"crypto/md5"
 	"encoding/binary"
+	"encoding/json"
+	"github.com/gorilla/websocket"
 	"io"
+	"log"
 	"math/rand"
 	"origin-tender-backend/server/internal/domain"
 	"origin-tender-backend/server/internal/repository/mongodb"
@@ -11,11 +14,32 @@ import (
 )
 
 type service struct {
-	repo mongodb.Repository
+	repo         mongodb.Repository
+	notification chan domain.Notification
 }
 
 func NewBotService(repo mongodb.Repository) BotService {
-	return &service{repo: repo}
+	n := make(chan domain.Notification)
+	return &service{repo: repo, notification: n}
+}
+
+func (s *service) SentNotification(conn *websocket.Conn) {
+	for notification := range s.notification {
+		data, err := json.Marshal(&notification)
+		if err != nil {
+			log.Println("json marshal: " + err.Error())
+			continue
+		}
+		err = conn.WriteMessage(1, data)
+		if err != nil {
+			log.Println("write message ws: " + err.Error())
+			continue
+		}
+	}
+}
+
+func (s *service) WriteNotification(notification domain.Notification) {
+	s.notification <- notification
 }
 
 func (s *service) GetSiteUserByName(name string) (domain.User, error) {
