@@ -2,6 +2,7 @@ package mongodb
 
 import (
 	"context"
+	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"origin-tender-backend/server/internal/domain"
@@ -21,9 +22,9 @@ func (r repo) SaveToken(ctx context.Context, ID string, file string) error {
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
-
 
 func (r repo) GetTgUser(name string) (domain.TelegramUser, string, error) {
 	var tgUser domain.TelegramUser
@@ -49,7 +50,7 @@ func (r repo) CreateNewTgUser(id int64, name string, token string) (domain.Teleg
 	}).Decode(&tgUser)
 
 	if err != nil {
-		return tgUser, "db error", nil
+		fmt.Println(tgUser, "db error", nil)
 	}
 
 	_, err2 := r.tpCollection.InsertOne(context.Background(), bson.D{
@@ -75,4 +76,3 @@ func (r repo) CreateNewTgUser(id int64, name string, token string) (domain.Teleg
 //	}
 //	return club
 //}
-

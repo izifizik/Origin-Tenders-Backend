@@ -3,10 +3,20 @@ package teleBotService
 import (
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"origin-tender-backend/server/internal/repository/mongodb"
 )
 
-func Run() {
-	bot, err := tgbotapi.NewBotAPI("apiToken")
+func Run(repo mongodb.Repository) {
+	//513268133
+	tgUser, status, err := repo.CreateNewTgUser(513268133, "sas", "apsdfovoije23")
+	if err != nil {
+		fmt.Println(status)
+		fmt.Println(err)
+	}
+
+	fmt.Println(tgUser.UserId)
+
+	bot, err := tgbotapi.NewBotAPI("493403387:AAGsQne6Pj0NTTQPwYo95gZ23jx5A2t59pw")
 	if err != nil {
 		panic(err)
 	}
