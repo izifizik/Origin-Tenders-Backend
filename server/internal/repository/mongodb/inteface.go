@@ -9,6 +9,8 @@ type Repository interface {
 
 	CreateOrder(order domain.Order) error
 
+	GetTgUsers() ([]domain.TelegramUser, error)
+
 	GetSiteUser(objectId string) (domain.User, error)
 	GetSiteUserByName(name string) (domain.User, error)
 	CreateSiteUser(user domain.User) error
