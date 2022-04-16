@@ -36,6 +36,8 @@ func Run() error {
 
 	service := botService.NewBotService(repo)
 
+	//service.CreateTgToken("Necromant24", "dflk", )
+
 	//err := service.CreateSiteUser(domain.User{Name: "Dimasik)"})
 	//user, err := service.GetSiteUserByName("Dimasik)")
 	//
