@@ -19,7 +19,7 @@ func SendAcceptParticipationInTender(tgUserId int64, tender domain.Tender) error
 
 	// tgUserId - chatId?
 	var priceStr = strconv.Itoa(int(tender.StartPrice))
-	msg := tgbotapi.NewMessage(tgUserId, "название тендера - "+tender.Name+"\nцена: "+priceStr+" Р\nшаг (в процентах): "+strconv.Itoa(int(tender.StepPercent))+" %\n описание: "+tender.ShortDescription)
+	msg := tgbotapi.NewMessage(tgUserId, "название тендера - "+tender.Name+"\nцена: "+priceStr+" Р\nшаг (в процентах): "+strconv.FormatFloat(float64(tender.StepPercent), 'f', 6, 64)+" %\n описание: "+tender.ShortDescription)
 	msg.ReplyMarkup = yesNo
 	_, err := TgBot.Send(msg)
 
