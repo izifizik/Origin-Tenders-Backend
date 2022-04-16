@@ -21,3 +21,14 @@ func (r repo) SaveToken(ctx context.Context, ID string, file string) error {
 	}
 	return nil
 }
+
+//func (r repo) ProofToken(ctx context.Context, ID string, file string) (bool, error) {
+//	filter := bson.M{"tg": name}
+//
+//	err := clubsCollection.FindOne(context.Background(), filter).Decode(&club)
+//	if err != nil {
+//		fmt.Println(err)
+//		return model.Club{}
+//	}
+//	return club
+//}
