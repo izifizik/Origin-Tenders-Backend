@@ -11,7 +11,6 @@ import (
 	"net/http"
 	"origin-tender-backend/server/internal/config"
 
-	"origin-tender-backend/server/internal/repository/mongodb"
 	teleBotService "origin-tender-backend/server/internal/service/teleg-bot-service"
 
 	"origin-tender-backend/server/internal/delivery/http/api/bot"
@@ -39,9 +38,15 @@ func Run() error {
 		panic("collection is nill")
 	}
 
-	var tgUserRepo mongodb.Repository = mongodb.NewRepo(client, collection)
+	tokenCollection := client.Database("Origin-Tenders").Collection("token-proof")
+	if tokenCollection == nil {
+		panic("collection is nill")
+	}
 
-	teleBotService.Run(tgUserRepo)
+	var tgUserRepo mongodb.Repository = mongodb.NewRepo(client, collection)
+	var tokenProofRepo mongodb.Repository = mongodb.NewRepo(client, tokenCollection)
+
+	teleBotService.Run(tgUserRepo, tokenProofRepo)
 
 	cfg := config.NewConfig()
 

@@ -5,11 +5,16 @@ import (
 )
 
 type Repository interface {
-
+	GetUserByTgId(id int64) (domain.TelegramUser, error)
 	GetTgUser(name string) (domain.TelegramUser, string, error)
 	CreateNewTgUser(id int64, name string, token string) (domain.TelegramUser, string, error)
+	UpdateUserStateById(id string, state string) error
+	SetUserNameById(idStr string, name string) error
+	SetSiteId(siteId string, idStr string) error
+
+	CreateToken(name string, token string, siteId string) error
+	ApproveProofToken(name string, token string) (string, error)
 
 	SaveToken(ID string, token string) error
 	ProofToken(ID string, token string) error
-
 }
