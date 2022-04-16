@@ -70,6 +70,17 @@ func Run(repo mongodb.Repository) {
 
 				}
 
+				callback := tgbotapi.NewCallback(update.CallbackQuery.ID, update.CallbackQuery.Data)
+				if _, err := bot.Request(callback); err != nil {
+					panic(err)
+				}
+
+				// And finally, send a message containing the data received.
+				msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, update.CallbackQuery.Data)
+				if _, err := bot.Send(msg); err != nil {
+					panic(err)
+				}
+
 			}
 		}
 
