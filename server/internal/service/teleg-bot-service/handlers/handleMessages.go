@@ -91,9 +91,7 @@ func handleGroupMessages(update tgbotapi.Update, bot *tgbotapi.BotAPI, repo mong
 
 	if groupUser.UserId == 0 {
 		repo.CreateNewTgUser(update.Message.Chat.ID, update.Message.Chat.UserName, "")
-		msg.Text = `здравствуйте это бот для уведомления пользователей 
-\n о новых событиях на платформе zakupki.mos.ru,
-\n отправьте токен с веб-клиента для привязки к этому чату \n id группы: ` + strconv.Itoa(int(update.Message.Chat.ID))
+		msg.Text = "здравствуйте это бот для уведомления пользователей\n о новых событиях на платформе zakupki.mos.ru,\n отправьте токен с веб-клиента для привязки к этому чату \n id группы: " + strconv.Itoa(int(update.Message.Chat.ID))
 	} else if groupUser.State != "main" {
 		msg.Text = "Отлично, вы привязали бота к этому чату!"
 		repo.UpdateUserStateById(groupUser.Id, "main")
