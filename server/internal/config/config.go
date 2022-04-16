@@ -7,7 +7,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
-	"os"
 	"sync"
 	"time"
 )
@@ -18,8 +17,11 @@ type Config struct {
 		Host string `env-default:"0.0.0.0"`
 	}
 	Database struct {
-		Client       *mongo.Client
-		TPCollection *mongo.Collection
+		Client               *mongo.Client
+		TPCollection         *mongo.Collection
+		UserCollection       *mongo.Collection
+		ProofTokenCollection *mongo.Collection
+		TgUserCollection     *mongo.Collection
 	}
 }
 
@@ -34,13 +36,18 @@ func NewConfig() Config {
 			log.Println(err.Error())
 		}
 
-		instance.App.Port = os.Getenv("PORT")
-		instance.App.Host = os.Getenv("HOST")
-		mongoURI := os.Getenv("MONGO_URI")
-		mongoTokenProofCollection := os.Getenv("TPCOLLECTION")
+		instance.App.Port = "8080"
+		instance.App.Host = "0.0.0.0"
+		mongoURI := "mongodb://10.10.117.179:27017"
+		mongoTokenProofCollection := "token-proof"
 
 		instance.Database.Client, err = mongoConnection(mongoURI)
 		instance.Database.TPCollection = instance.Database.Client.Database("Origin-Tenders").Collection(mongoTokenProofCollection)
+
+		instance.Database.TgUserCollection = instance.Database.Client.Database("Origin-Tenders").Collection("TelegramUsers")
+		instance.Database.ProofTokenCollection = instance.Database.Client.Database("Origin-Tenders").Collection("token-proof")
+		instance.Database.UserCollection = instance.Database.Client.Database("Origin-Tenders").Collection("Users")
+
 	})
 	return instance
 }

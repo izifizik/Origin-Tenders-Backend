@@ -6,7 +6,7 @@ import (
 	"origin-tender-backend/server/internal/repository/mongodb"
 )
 
-func Run(tgUserRepo mongodb.Repository, tokenProofRepo mongodb.Repository) {
+func Run(repo mongodb.Repository) {
 	//513268133
 	//tgUser, status, err := tgUserRepo.CreateNewTgUser(513268133, "sas2", "apsdfovoije23")
 	//if err != nil {
@@ -43,17 +43,19 @@ func Run(tgUserRepo mongodb.Repository, tokenProofRepo mongodb.Repository) {
 		if update.Message != nil {
 			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "no text")
 
-			user, err := tgUserRepo.GetUserByTgId(update.SentFrom().ID)
+			user, err := repo.GetUserByTgId(update.SentFrom().ID)
 			if err != nil {
 				fmt.Println("get user db error")
 			}
 
 			if user.UserId == 0 {
-				msg.Text = "введите ваш username с сайта"
+				userName := update.SentFrom().UserName
+				fmt.Println(userName)
+				msg.Text = "введите ваш token с сайта"
 
-				tgUser, _, _ := tgUserRepo.CreateNewTgUser(update.SentFrom().ID, "", "")
+				tgUser, _, _ := repo.CreateNewTgUser(update.SentFrom().ID, "", "")
 
-				tgUserRepo.UpdateUserStateById(tgUser.Id, "entering_token")
+				repo.UpdateUserStateById(tgUser.Id, "entering_token")
 
 				bot.Send(msg)
 				continue
@@ -61,21 +63,21 @@ func Run(tgUserRepo mongodb.Repository, tokenProofRepo mongodb.Repository) {
 
 			switch user.State {
 			case "entering_name":
-				tgUser, _, _ := tgUserRepo.GetTgUser(update.Message.Text)
+				tgUser, _, _ := repo.GetTgUser(update.Message.Text)
 
 				if tgUser.UserId == 0 {
-					tgUserRepo.SetUserNameById(user.Id, update.Message.Text)
+					repo.SetUserNameById(user.Id, update.Message.Text)
 					msg.Text = "введите токен"
-					tgUserRepo.UpdateUserStateById(user.Id, "entering_name")
+					repo.UpdateUserStateById(user.Id, "entering_name")
 				} else {
 					msg.Text = "такой пользователь уже зарегистрирован в телеграм боте, введите другое имя"
 
 				}
 
-			case "entering_token":
+			case "":
 				token := update.Message.Text
 
-				status, err := tokenProofRepo.ApproveProofToken(user.Name, token)
+				status, err := repo.ApproveProofToken(update.SentFrom().UserName, token)
 				if err != nil {
 					fmt.Println(err)
 				}
@@ -85,8 +87,10 @@ func Run(tgUserRepo mongodb.Repository, tokenProofRepo mongodb.Repository) {
 					continue
 				}
 
-				tgUserRepo.SetSiteId(status, user.Id)
+				repo.SetSiteId(status, user.Id)
 				msg.Text = "вы успешно связались с сервисом, ждите новостей!"
+
+				repo.UpdateUserStateById(user.Id, "main")
 			}
 
 			bot.Send(msg)

@@ -1,18 +1,12 @@
 package domain
 
-
-
-type Bot struct {
-}
+import "go.mongodb.org/mongo-driver/bson/primitive"
 
 //type Bot struct {
 //
 //}
 
-
 //type AccountID
-
-import "go.mongodb.org/mongo-driver/bson/primitive"
 
 type Bot struct {
 	UserID  primitive.ObjectID
@@ -26,4 +20,3 @@ type Options struct {
 	MinAutoPrice  float64
 	CriticalPrice float64
 }
-

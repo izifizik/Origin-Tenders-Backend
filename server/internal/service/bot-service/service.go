@@ -17,6 +17,11 @@ func NewBotService(repo mongodb.Repository) BotService {
 	return &service{repo: repo}
 }
 
+// siteId - User collection ObjectId
+func (s *service) CreateTgToken(name string, token string, siteId string) error {
+	return s.repo.CreateToken(name, token, siteId)
+}
+
 func (s *service) GenerateToken(ID string) string {
 	h := md5.New()
 	io.WriteString(h, ID)
@@ -34,4 +39,4 @@ func generateToken(seed uint64) string {
 	return strconv.Itoa(rand.Int())
 }
 
-func (s *service) StartServeTendor()
+//func (s *service) StartServeTendor()
