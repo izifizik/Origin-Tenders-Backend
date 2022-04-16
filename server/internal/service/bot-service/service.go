@@ -5,21 +5,28 @@ import (
 	"encoding/binary"
 	"io"
 	"math/rand"
+	"origin-tender-backend/server/internal/repository/mongodb"
 	"strconv"
 )
 
 type service struct {
+	repo mongodb.Repository
 }
 
-func NewBotService() BotService {
-	return &service{}
+func NewBotService(repo mongodb.Repository) BotService {
+	return &service{repo: repo}
 }
 
 func (s *service) GenerateToken(ID string) string {
 	h := md5.New()
-	io.WriteString(h, "And Leon's getting larger!")
+	io.WriteString(h, ID)
 	token := generateToken(binary.BigEndian.Uint64(h.Sum(nil)))
+	s.repo.SaveToken(ID, token)
+	return token
+}
 
+func (s *service) ProofToken(ID string, token string) error {
+	return s.repo.ProofToken(ID, token)
 }
 
 func generateToken(seed uint64) string {

@@ -18,7 +18,8 @@ type Config struct {
 		Host string `env-default:"localhost"`
 	}
 	Database struct {
-		Client *mongo.Client
+		Client       *mongo.Client
+		TPCollection *mongo.Collection
 	}
 }
 
@@ -36,8 +37,10 @@ func NewConfig() Config {
 		instance.App.Port = os.Getenv("PORT")
 		instance.App.Host = os.Getenv("HOST")
 		mongoURI := os.Getenv("MONGO_URI")
+		mongoTokenProofCollection := os.Getenv("TPCOLLECTION")
 
 		instance.Database.Client, err = mongoConnection(mongoURI)
+		instance.Database.TPCollection = instance.Database.Client.Database("Origin-Tenders").Collection(mongoTokenProofCollection)
 	})
 	return instance
 }
