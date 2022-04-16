@@ -8,6 +8,11 @@ import (
 
 var TgBot *tgbotapi.BotAPI
 
+func FloatToString(input_num float64) string {
+	// to convert a float number to a string
+	return strconv.FormatFloat(input_num, 'f', 2, 64)
+}
+
 func SendAcceptParticipationInTender(tgUserId int64, tender domain.Tender) error {
 
 	var yesNo = tgbotapi.NewInlineKeyboardMarkup(
@@ -19,7 +24,7 @@ func SendAcceptParticipationInTender(tgUserId int64, tender domain.Tender) error
 
 	// tgUserId - chatId?
 	var priceStr = strconv.Itoa(int(tender.StartPrice))
-	msg := tgbotapi.NewMessage(tgUserId, "название тендера - "+tender.Name+"\nцена: "+priceStr+" Р\nшаг (в процентах): "+strconv.FormatFloat(float64(tender.StepPercent), 'f', 6, 64)+" %\n описание: "+tender.ShortDescription)
+	msg := tgbotapi.NewMessage(tgUserId, "название тендера - "+tender.Name+"\nцена: "+priceStr+" Р\nшаг (в процентах): "+FloatToString(tender.StepPercent)+" %\n описание: "+tender.ShortDescription)
 	msg.ReplyMarkup = yesNo
 	_, err := TgBot.Send(msg)
 

@@ -13,9 +13,15 @@ import (
 	teleBotService "origin-tender-backend/server/internal/service/teleg-bot-service"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 )
+
+func FloatToString(input_num float64) string {
+	// to convert a float number to a string
+	return strconv.FormatFloat(input_num, 'f', 2, 64)
+}
 
 func Run() error {
 

@@ -20,6 +20,6 @@ type Tender struct {
 	StartPrice       float32 `json:"startPrice" bson:"start_price"`
 	CurrentPrice     float32 `json:"currentPrice" bson:"current_price"`
 	Status           string  `json:"status" bson:"status"`
-	StepPercent      float32 `json:"stepPercent"`
+	StepPercent      float64 `json:"stepPercent"`
 	ShortDescription string  `json:"shortDescription"`
 }
