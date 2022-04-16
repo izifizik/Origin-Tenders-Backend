@@ -1,6 +1,7 @@
 package mongodb
 
 import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"origin-tender-backend/server/internal/domain"
 )
 
@@ -20,9 +21,11 @@ type Repository interface {
 	SetUserNameById(idStr string, name string) error
 	SetSiteId(siteId string, idStr string) error
 
-	CreateToken(name string, token string, siteId string) error
+	CreateToken(name string, token string, siteId primitive.ObjectID) error
 	ApproveProofToken(name string, token string) (string, error)
 
 	SaveToken(ID string, token string) error
 	ProofToken(ID string, token string) error
+
+	CreateBotByID(id, tenderId string, stepPercent, criticalPrice float64, isNeedApprove bool)
 }

@@ -51,6 +51,7 @@ func (h *handler) Register(router *gin.Engine) {
 	router.GET("/tenders", h.GetTenders)
 	router.GET("/user/:uuid", h.GetUser)
 	router.POST("/bot/set_options")
+	router.GET("/ws/notification", h.NotificationWS)
 	//router.POST("/bot/proofToken")
 
 	router.POST("/order", func(context *gin.Context) {
