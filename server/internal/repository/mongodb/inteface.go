@@ -7,6 +7,7 @@ import (
 
 type Repository interface {
 	CreateTender(tender domain.Tender)
+	GetTenderByID(id string) domain.Tender
 
 	CreateOrder(order domain.Order) error
 

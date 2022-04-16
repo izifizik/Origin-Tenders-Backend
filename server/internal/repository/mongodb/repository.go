@@ -15,14 +15,14 @@ type repo struct {
 	userCollection       *mongo.Collection
 	proofTokenCollection *mongo.Collection
 	tgUserCollection     *mongo.Collection
+	tendersCollection    *mongo.Collection
 }
 
-func NewRepo(client *mongo.Client, tpCollection *mongo.Collection,
-	userCollection *mongo.Collection, proofTokenCollection *mongo.Collection,
-	tgUserCollection *mongo.Collection) Repository {
+func NewRepo(client *mongo.Client, tpCollection, userCollection, proofTokenCollection,
+	tgUserCollection, tenderCollection *mongo.Collection) Repository {
 	return &repo{
 		client, tpCollection, userCollection,
-		proofTokenCollection, tgUserCollection,
+		proofTokenCollection, tgUserCollection, tenderCollection,
 	}
 }
 

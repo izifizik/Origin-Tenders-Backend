@@ -4,11 +4,12 @@ import (
 	"context"
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"origin-tender-backend/server/internal/domain"
 	"time"
 )
 
-func (r repo) CreateTender(tender domain.Tender) {
+func (r *repo) CreateTender(tender domain.Tender) {
 	_, err := r.proofTokenCollection.InsertOne(context.Background(), bson.D{
 		{"timeStamp", time.Now()},
 		{"MinimalStepPercent", tender.MinimalStepPercent},
@@ -26,7 +27,18 @@ func (r repo) CreateTender(tender domain.Tender) {
 	// TODO: do stuff, call bot events
 }
 
-func (r repo) GetTender() domain.Tender {
-
+func (r *repo) GetTenderByID(id string) domain.Tender {
+	tID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		fmt.Println("Error with ObjectIDFromHex")
+		return domain.Tender{}
+	}
+	filter := bson.M{"_id": tID}
+	var tender domain.Tender
+	err = r.tendersCollection.FindOne(context.Background(), filter).Decode(&tender)
+	if err != nil {
+		fmt.Println("Error with get tender")
+		return domain.Tender{}
+	}
 	return domain.Tender{}
 }
