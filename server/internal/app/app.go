@@ -11,6 +11,7 @@ import (
 	"origin-tender-backend/server/internal/repository/mongodb"
 	botService "origin-tender-backend/server/internal/service/bot-service"
 	teleBotService "origin-tender-backend/server/internal/service/teleg-bot-service"
+	"origin-tender-backend/websocket"
 	"os"
 	"os/signal"
 	"strconv"
@@ -26,6 +27,7 @@ func FloatToString(input_num float64) string {
 func Run() error {
 
 	cfg := config.NewConfig()
+	websocket.Run()
 
 	router := gin.Default()
 	gin.SetMode(gin.DebugMode)

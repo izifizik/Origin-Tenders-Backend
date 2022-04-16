@@ -12,7 +12,7 @@ import (
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-var addr = flag.String("addr", ":8080", "http service address")
+var addr = flag.String("addr", ":8081", "http service address")
 
 func serveHome(w http.ResponseWriter, r *http.Request) {
 	log.Println(r.URL)
@@ -26,7 +26,7 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.ServeFile(w, r, "C:/projects/golangProjects/tenderhack3/Origin-Tenders-Backend/websocket/home.html")
+	http.ServeFile(w, r, "./websocket/home.html")
 }
 
 func SendNotification(writer http.ResponseWriter, request *http.Request) {
@@ -38,7 +38,7 @@ func Run() {
 	hub := newHub()
 	go hub.run()
 	http.HandleFunc("/", serveHome)
-	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/ws/bets", func(w http.ResponseWriter, r *http.Request) {
 		serveWs(hub, w, r)
 	})
 

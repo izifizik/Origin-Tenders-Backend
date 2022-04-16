@@ -35,8 +35,8 @@ func (r repo) CreateBotByID(id, tenderId string, stepPercent, criticalPrice floa
 		fmt.Println("error to take user from bd: " + err.Error())
 		return
 	}
-	tender, err := primitive.ObjectIDFromHex(tenderId)
-	user.Bot = append(user.Bot, domain.Bot{TenderID: tender, StepPercent: stepPercent, CriticalPrice: criticalPrice, IsNeedApprove: isNeedApprove})
+	//tender, err := primitive.ObjectIDFromHex(tenderId)
+	//user.Bot = append(user.Bot, domain.Bot{TenderID: tender, StepPercent: stepPercent, CriticalPrice: criticalPrice, IsNeedApprove: isNeedApprove})
 
 	_, err = r.userCollection.UpdateOne(context.Background(), filter, user)
 	if err != nil {
