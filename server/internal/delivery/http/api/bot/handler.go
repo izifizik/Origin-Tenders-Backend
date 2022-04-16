@@ -65,16 +65,21 @@ func (h *handler) Register(router *gin.Engine) {
 		h.RaiseEvent(context, h.botService)
 	})
 
-	router.GET("/bot/:id/filters")
-	router.POST("/bot/:id/filters")
-	router.PUT("/bot/filters")
-	router.DELETE("/bot/filters")
-
 }
 
-//func (h *handler) GetFilters(c *gin.Context) {
-//
-//}
+func (h *handler) SetupBot(c *gin.Context) {
+	var dto BotSetupDTO
+
+	err := c.ShouldBindJSON(&dto)
+	if err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
+	h.botService.BotSetup(dto.UserID, dto.TenderID, dto.Alg, dto.Type, dto.Procent, dto.Minimal, dto.Critical, dto.IsApprove)
+
+	c.Status(http.StatusOK)
+}
 
 func (h *handler) RaiseEvent(c *gin.Context, s botService.BotService) {
 	var event domain.ServiceEvent
@@ -139,17 +144,6 @@ func (h *handler) CreateOrder(c *gin.Context, s botService.BotService) {
 
 // какую статистику стоит показывать по тендерам в которых учавствует бот от /tenders
 // это активные тендеры бота
-
-func (h *handler) BotSetOptions(c *gin.Context) {
-	// создаем горутину которая крутит этого бота в тендере с определенными настройками
-}
-
-func (h *handler) Aproove(c *gin.Context) {
-	// когда автоматически бот уже не может подтверждать сделки будет вызыватсья этот поинт
-	// Работает следующим образом
-	// Бот в фоне ждет подтверждения => надо реализовать где то подтверждение транзакции
-
-}
 
 func (h *handler) GetUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{

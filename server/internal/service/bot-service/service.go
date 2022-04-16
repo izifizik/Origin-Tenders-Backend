@@ -24,9 +24,27 @@ func NewBotService(repo mongodb.Repository) BotService {
 	return &service{repo: repo, notification: n}
 }
 
-//func (s *service) GetAllTenders() []domain.Tender {
-//
-//}
+func NewStandardBot(id, tenderID string, procent, critical float64, isApprove bool) {
+
+}
+
+func NewExtendedBot(id, tenderID string, procent, minimal, critical float64, isApprove bool) {
+
+}
+
+func (s *service) BotSetup(id, tenderID, alg, tpe string, procent, minimal, critical float64, isApprove bool) {
+	switch alg {
+	case "to_small":
+		if tpe == "standard" {
+			go NewStandardBot(id, tenderID, procent, critical, isApprove)
+		}
+		go NewExtendedBot(id, tenderID, procent, minimal, critical, isApprove)
+	case "race_win":
+
+	case "curr_procent":
+
+	}
+}
 
 func (s *service) BotActivate(id, tenderId string, stepPercent, criticalPrice float64, isNeedApprove bool) {
 	// бот создает участие (фиксация в бд) на определенный юзер айди с опциями

@@ -24,4 +24,6 @@ type BotService interface {
 	GetTenderByID(id string) domain.Tender
 	CreateTender(tender domain.Tender)
 	//GetAllTenders() []domain.Tender
+
+	BotSetup(id, tenderID, alg, tpe string, procent, minimal, critical float64, isApprove bool)
 }
