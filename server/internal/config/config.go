@@ -15,7 +15,7 @@ import (
 type Config struct {
 	App struct {
 		Port string `env-default:"8080"`
-		Host string `env-default:"localhost"`
+		Host string `env-default:"0.0.0.0"`
 	}
 	Database struct {
 		Client       *mongo.Client
