@@ -10,8 +10,14 @@ import (
 	"log"
 	"net/http"
 	"origin-tender-backend/server/internal/config"
+
 	"origin-tender-backend/server/internal/repository/mongodb"
 	teleBotService "origin-tender-backend/server/internal/service/teleg-bot-service"
+
+	"origin-tender-backend/server/internal/delivery/http/api/bot"
+	"origin-tender-backend/server/internal/repository/mongodb"
+	botService "origin-tender-backend/server/internal/service/bot-service"
+
 	"os"
 	"os/signal"
 	"syscall"
@@ -48,6 +54,14 @@ func Run() error {
 		WriteTimeout:   time.Second * 15,
 		MaxHeaderBytes: 1 << 20,
 	}
+
+	repo := mongodb.NewRepo(cfg.Database.Client, cfg.Database.TPCollection)
+
+	service := botService.NewBotService(repo)
+
+	handler := bot.NewBotHandler(service)
+
+	handler.Register(router)
 
 	go gracefulShutdown([]os.Signal{syscall.SIGABRT, syscall.SIGQUIT, syscall.SIGHUP, os.Interrupt, syscall.SIGTERM}, server)
 
