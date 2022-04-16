@@ -11,7 +11,7 @@ func main() {
 
 	fmt.Println("!!!")
 
-	websocket.Run()
+	go websocket.Run()
 
 	err := app.Run()
 	if err != nil {

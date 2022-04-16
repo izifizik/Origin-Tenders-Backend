@@ -10,7 +10,7 @@ import (
 func HandleMessages(update tgbotapi.Update, bot *tgbotapi.BotAPI, repo mongodb.Repository) {
 
 	//update.Message.Chat.Type
-	//err := actions.SendAcceptParticipationInTender(update.SentFrom().ID, " sas", 223)
+	//err := wsActions.SendAcceptParticipationInTender(update.SentFrom().ID, " sas", 223)
 	// group
 
 	if update.Message.Chat.Type == "group" {

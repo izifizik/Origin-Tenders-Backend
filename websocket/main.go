@@ -3,9 +3,11 @@ package websocket
 import (
 	"flag"
 	"fmt"
+	"github.com/gorilla/websocket"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"origin-tender-backend/websocket/wsModels"
 )
 
 // Copyright 2013 The Gorilla WebSocket Authors. All rights reserved.
@@ -33,23 +35,86 @@ func SendNotification(writer http.ResponseWriter, request *http.Request) {
 
 }
 
+// return userId
+func initRead(w http.ResponseWriter, r *http.Request) (string, *websocket.Conn, error) {
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println(err)
+		return "", conn, err
+	}
+
+	_, message, err := conn.ReadMessage()
+	if err != nil {
+		log.Println("Error during message reading:", err)
+		return "", conn, err
+	}
+
+	userId := string(message[:])
+	return userId, conn, nil
+}
+
 func Run() {
 	flag.Parse()
 	hub := newHub()
 	go hub.run()
 	http.HandleFunc("/", serveHome)
-	http.HandleFunc("/ws/bets", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/ws/test", func(w http.ResponseWriter, r *http.Request) {
 		serveWs(hub, w, r)
 	})
 
-	http.HandleFunc("/ws/app", func(writer http.ResponseWriter, request *http.Request) {
-		body, err := ioutil.ReadAll(request.Body)
+	http.HandleFunc("/ws/notification", func(writer http.ResponseWriter, request *http.Request) {
+
+		userId, conn, err := initRead(writer, request)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println()
 		}
 
-		myString := string(body[:])
-		fmt.Println(myString)
+		if userId != "" {
+			wsModels.UserConnections[userId] = wsModels.WsConnections{
+				Bets:         wsModels.UserConnections[userId].Bets,
+				Session:      wsModels.UserConnections[userId].Session,
+				Notification: conn,
+			}
+			conn.WriteMessage(1, []byte("ok"))
+		}
+
+	})
+
+	http.HandleFunc("/ws/bets", func(writer http.ResponseWriter, request *http.Request) {
+
+		userId, conn, err := initRead(writer, request)
+		if err != nil {
+			fmt.Println()
+		}
+
+		if userId != "" {
+			wsModels.UserConnections[userId] = wsModels.WsConnections{
+				Bets:         conn,
+				Session:      wsModels.UserConnections[userId].Session,
+				Notification: wsModels.UserConnections[userId].Notification,
+			}
+
+			conn.WriteMessage(1, []byte("ok"))
+		}
+
+	})
+
+	http.HandleFunc("/ws/session", func(writer http.ResponseWriter, request *http.Request) {
+
+		userId, conn, err := initRead(writer, request)
+		if err != nil {
+			fmt.Println()
+		}
+
+		if userId != "" {
+			wsModels.UserConnections[userId] = wsModels.WsConnections{
+				Bets:         wsModels.UserConnections[userId].Bets,
+				Session:      conn,
+				Notification: wsModels.UserConnections[userId].Notification,
+			}
+
+			conn.WriteMessage(1, []byte("ok"))
+		}
 
 	})
 

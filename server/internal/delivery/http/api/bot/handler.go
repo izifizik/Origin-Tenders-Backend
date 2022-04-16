@@ -13,6 +13,7 @@ import (
 	"origin-tender-backend/server/internal/domain"
 	botService "origin-tender-backend/server/internal/service/bot-service"
 	"origin-tender-backend/server/internal/service/teleg-bot-service/actions"
+	"origin-tender-backend/websocket/wsActions"
 	"strconv"
 	"time"
 )
@@ -108,6 +109,10 @@ func (h *handler) RaiseEvent(c *gin.Context, s botService.BotService) {
 			fmt.Println(len(users))
 		}
 
+		s.CreateTender(tender)
+
+		wsActions.NotifyAllSession("sess")
+
 	} else if event.Type == "order" {
 		var order domain.Order
 		err := json.Unmarshal([]byte(event.Data), &order)
@@ -120,7 +125,15 @@ func (h *handler) RaiseEvent(c *gin.Context, s botService.BotService) {
 			fmt.Println(err)
 		}
 
+		orderData, err := json.Marshal(order)
+		if err != nil {
+			fmt.Println(err)
+		}
+
 		//TODO: do stuff
+
+		wsActions.NotifyUser(string(orderData), order.UserId)
+		wsActions.NotifyAllBet(string(orderData))
 
 	}
 

@@ -15,7 +15,7 @@ func (r repo) CreateOrder(order domain.Order) error {
 	//	{"Price", order.Price},
 	//})
 
-	_, err := r.proofTokenCollection.InsertOne(context.Background(), order)
+	_, err := r.ordersCollection.InsertOne(context.Background(), order)
 
 	// TODO: do stuff, call bot events
 

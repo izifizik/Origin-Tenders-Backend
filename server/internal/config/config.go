@@ -23,6 +23,7 @@ type Config struct {
 		ProofTokenCollection *mongo.Collection
 		TgUserCollection     *mongo.Collection
 		TenderCollection     *mongo.Collection
+		OrderCollection      *mongo.Collection
 	}
 }
 
@@ -49,7 +50,7 @@ func NewConfig() Config {
 		instance.Database.ProofTokenCollection = instance.Database.Client.Database("Origin-Tenders").Collection("token-proof")
 		instance.Database.UserCollection = instance.Database.Client.Database("Origin-Tenders").Collection("Users")
 		instance.Database.TenderCollection = instance.Database.Client.Database("Origin-Tenders").Collection("tenders")
-
+		instance.Database.OrderCollection = instance.Database.Client.Database("Origin-Tenders").Collection("orders")
 	})
 	return instance
 }
