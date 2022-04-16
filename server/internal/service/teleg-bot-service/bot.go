@@ -77,7 +77,7 @@ func Run(repo mongodb.Repository) {
 			if user.UserId == 0 {
 				userName := update.SentFrom().UserName
 				fmt.Println(userName)
-				msg.Text = "введите ваш token с сайта"
+				msg.Text = "Это бот для автоматизации получения рассылки, пожалуйста, введите ваш токен с сайта"
 
 				tgUser, _, _ := repo.CreateNewTgUser(update.SentFrom().ID, "", "")
 
@@ -109,7 +109,7 @@ func Run(repo mongodb.Repository) {
 				}
 
 				if status == "invalid token" {
-					msg.Text = "incorrect token, try again"
+					msg.Text = "вы успешно связались с сервисом, ждите новостей!!!"
 					bot.Send(msg)
 					continue
 				}
