@@ -44,7 +44,7 @@ func Run(repo mongodb.Repository) {
 
 	var yes = tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("yes", "разрешен ордер"),
+			tgbotapi.NewInlineKeyboardButtonData("yes", "ордер разрешен "),
 		),
 	)
 
