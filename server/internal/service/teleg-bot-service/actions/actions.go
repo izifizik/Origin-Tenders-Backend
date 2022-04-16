@@ -11,8 +11,8 @@ func SendAcceptParticipationInTender(tgUserId int64, tenderName string, price fl
 
 	var yesNo = tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("yes", "ордер разрешен"),
-			tgbotapi.NewInlineKeyboardButtonData("no", "ордер отклонен"),
+			tgbotapi.NewInlineKeyboardButtonData("подтвердить", "Участие подтверждено"),
+			tgbotapi.NewInlineKeyboardButtonData("отклонить", "Участие отклонено"),
 		),
 	)
 
