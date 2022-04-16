@@ -5,6 +5,7 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"origin-tender-backend/server/internal/repository/mongodb"
 	"origin-tender-backend/server/internal/service/teleg-bot-service/actions"
+	"origin-tender-backend/server/internal/service/teleg-bot-service/handlers"
 )
 
 func Run(repo mongodb.Repository) {
@@ -42,109 +43,14 @@ func Run(repo mongodb.Repository) {
 
 	actions.TgBot = bot
 
-	var yes = tgbotapi.NewInlineKeyboardMarkup(
-		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("yes", "ордер разрешен "),
-		),
-	)
-
-	var no = tgbotapi.NewInlineKeyboardMarkup(
-		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("no", "ордер отклонен"),
-		),
-	)
-
 	for update := range updates {
 
 		if update.CallbackQuery != nil {
-			if update.CallbackQuery.Data != "" {
-
-				//var action domain.TgAction
-				//json.Unmarshal([]byte(update.CallbackQuery.Data), &action)
-
-				switch update.CallbackQuery.Message.Text {
-				case "yes":
-					update.Message.ReplyMarkup = &yes
-				case "no":
-					update.Message.ReplyMarkup = &no
-
-				}
-
-				msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, update.CallbackQuery.Data)
-				msg.ReplyToMessageID = update.CallbackQuery.Message.MessageID
-
-				callback := tgbotapi.NewCallback(update.CallbackQuery.ID, update.CallbackQuery.Data)
-				if _, err := bot.Request(callback); err != nil {
-					panic(err)
-				}
-
-				// And finally, send a message containing the data received.
-				if _, err := bot.Send(msg); err != nil {
-					panic(err)
-				}
-
-			}
+			handlers.HandleCallBack(update, bot)
 		}
 
 		if update.Message != nil {
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "no text")
-
-			//err := actions.SendAcceptParticipationInTender(update.SentFrom().ID, " sas", 223)
-
-			user, err := repo.GetUserByTgId(update.SentFrom().ID)
-			if err != nil {
-				fmt.Println("get user db error")
-			}
-
-			if user.UserId == 0 {
-				userName := update.SentFrom().UserName
-				fmt.Println(userName)
-				msg.Text = "👋 Это бот для автоматизации получения уведомлений 👋\n с сайта zakupku.mos.ru, пожалуйста, \n Введите  введите ваш токен \n с сайта для получения доступа к функциям бота 🌚"
-
-				tgUser, _, _ := repo.CreateNewTgUser(update.SentFrom().ID, "", "")
-
-				repo.UpdateUserStateById(tgUser.Id, "entering_token")
-
-				bot.Send(msg)
-				continue
-			}
-
-			switch user.State {
-			case "entering_name":
-				tgUser, _, _ := repo.GetTgUser(update.Message.Text)
-
-				if tgUser.UserId == 0 {
-					repo.SetUserNameById(user.Id, update.Message.Text)
-					msg.Text = "введите токен"
-					repo.UpdateUserStateById(user.Id, "entering_name")
-				} else {
-					msg.Text = "такой пользователь уже зарегистрирован в телеграм боте, введите другое имя"
-
-				}
-
-			case "":
-				token := update.Message.Text
-
-				status, err := repo.ApproveProofToken(update.SentFrom().UserName, token)
-				if err != nil {
-					fmt.Println(err)
-				}
-
-				fmt.Println(update.SentFrom().UserName + " !!!!!!!!!!!!!!!!!!!")
-
-				if status == "invalid token" {
-					msg.Text = "вы успешно связались с сервисом, ждите новых уведомлений!!!"
-					bot.Send(msg)
-					continue
-				}
-
-				repo.SetSiteId(status, user.Id)
-				msg.Text = "вы успешно связались с сервисом, ждите новых уведомлений!"
-
-				repo.UpdateUserStateById(user.Id, "main")
-			}
-
-			bot.Send(msg)
+			handlers.HandleMessages(update, bot, repo)
 		}
 	}
 }
