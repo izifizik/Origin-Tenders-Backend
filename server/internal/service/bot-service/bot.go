@@ -1,0 +1,5 @@
+package botService
+
+func Run() {
+
+}
