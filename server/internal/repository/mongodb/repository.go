@@ -26,6 +26,19 @@ func NewRepo(client *mongo.Client, tpCollection *mongo.Collection,
 	}
 }
 
+func (r repo) CreateBotByID(id, tenderId string, stepPercent, criticalPrice float64, isNeedApprove bool) {
+	//filter := bson.M{"_id": primitive.ObjectIDFromHex(id)}
+	//var user domain.User
+	//err := r.userCollection.FindOne(context.Background(), filter).Decode(&user)
+	//if err != nil {
+	//	fmt.Println("error to take user from bd: " + err.Error())
+	//}
+	//tender, err := primitive.ObjectIDFromHex(tenderId)
+	//user.Bot = append(user.Bot, domain.Bot{TenderID: tender, StepPercent: stepPercent, CriticalPrice: criticalPrice, IsNeedApprove: isNeedApprove})
+
+	//r.userCollection.UpdateOne(context.Background(), filter)
+}
+
 func (r repo) CreateSiteUser(user domain.User) error {
 	_, err := r.userCollection.InsertOne(context.Background(), bson.D{
 		{"name", user.Name},
@@ -181,8 +194,7 @@ func (r repo) UpdateUserStateById(idStr string, state string) error {
 //	return club
 //}
 
-func (r repo) CreateToken(name string, token string, siteId string) error {
-
+func (r repo) CreateToken(name string, token string, siteId primitive.ObjectID) error {
 	_, err := r.proofTokenCollection.InsertOne(context.Background(), bson.D{
 		{"name", name},
 		{"token", token},

@@ -5,6 +5,7 @@ import (
 	"encoding/binary"
 	"encoding/json"
 	"github.com/gorilla/websocket"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"io"
 	"log"
 	"math/rand"
@@ -21,6 +22,17 @@ type service struct {
 func NewBotService(repo mongodb.Repository) BotService {
 	n := make(chan domain.Notification)
 	return &service{repo: repo, notification: n}
+}
+
+func (s *service) BotActivate(id, tenderId string, stepPercent, criticalPrice float64, isNeedApprove bool) {
+	// бот создает участие (фиксация в бд) на определенный юзер айди с опциями
+	s.repo.CreateBotByID(id, tenderId, stepPercent, criticalPrice, isNeedApprove)
+	// бот в горутине
+	// бот получает цену из бд по тендер айди
+	// бот смотрит не был ли он последним кто менял цену
+	// бот меняет цену на определенный шаг
+	// бот записывает данные в бд
+	// бот ждет 25 секу
 }
 
 func (s *service) SentNotification(conn *websocket.Conn) {
@@ -51,7 +63,7 @@ func (s *service) CreateSiteUser(user domain.User) error {
 }
 
 // siteId - User collection ObjectId
-func (s *service) CreateTgToken(name string, token string, siteId string) error {
+func (s *service) CreateTgToken(name string, token string, siteId primitive.ObjectID) error {
 	return s.repo.CreateToken(name, token, siteId)
 }
 
