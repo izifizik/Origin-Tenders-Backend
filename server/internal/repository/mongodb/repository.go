@@ -6,15 +6,16 @@ import (
 )
 
 type repo struct {
-	client *mongo.Client
+	client       *mongo.Client
+	tpCollection *mongo.Collection
 }
 
-func NewRepo(client *mongo.Client) Repository {
-	return &repo{client}
+func NewRepo(client *mongo.Client, tpCollection *mongo.Collection) Repository {
+	return &repo{client, tpCollection}
 }
 
-func (r repo) SaveToken(ctx context.Context, ID string, file string) {
-	_, err := fileCollection.InsertOne(context.Background(), file)
+func (r repo) SaveToken(ctx context.Context, ID string, file string) error {
+	_, err := r.tpCollection.InsertOne(context.Background(), file)
 	if err != nil {
 		return err
 	}
