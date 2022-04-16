@@ -53,6 +53,17 @@ func Run() {
 
 	})
 
+	http.HandleFunc("/ws/", func(writer http.ResponseWriter, request *http.Request) {
+		body, err := ioutil.ReadAll(request.Body)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		myString := string(body[:])
+		fmt.Println(myString)
+
+	})
+
 	err := http.ListenAndServe(*addr, nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
