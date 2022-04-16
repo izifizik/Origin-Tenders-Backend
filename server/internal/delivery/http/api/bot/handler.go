@@ -44,8 +44,9 @@ func (h *handler) Notification(c *gin.Context) {
 		log.Println(err.Error())
 		return
 	}
-
-	go func() {
+	// читать из канала range и записывать в вебсокет (сейчас это фекалия)
+	// Кеша же гений веб сокетов пускай делает
+	go func() { // в нотификейшоне надо что бы мы отправляли увед и в коннект (если тот открыт) и в бота (всегда)
 		conn.WriteJSON(gin.H{
 			"id":            "3",
 			"type":          "participation",
@@ -62,6 +63,15 @@ func (h *handler) Notification(c *gin.Context) {
 
 func (h *handler) BotSetOptions(c *gin.Context) {
 	// создаем горутину которая крутит этого бота в тендере с определенными настройками
+	var dto OptionsDTO
+
+	err := c.ShouldBindJSON(&dto)
+	if err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
+	go BotStart(dto)
 }
 
 func (h *handler) Approve(c *gin.Context) {
