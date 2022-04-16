@@ -4,13 +4,13 @@ import tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 
 var yes = tgbotapi.NewInlineKeyboardMarkup(
 	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("подтвердить", "ордер разрешен "),
+		tgbotapi.NewInlineKeyboardButtonData("подтвердить", "Участие подтверждено"),
 	),
 )
 
 var no = tgbotapi.NewInlineKeyboardMarkup(
 	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("отклонить", "ордер отклонен"),
+		tgbotapi.NewInlineKeyboardButtonData("отклонить", "Участие отклонено"),
 	),
 )
 
