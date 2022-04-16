@@ -24,6 +24,10 @@ func NewBotService(repo mongodb.Repository) BotService {
 	return &service{repo: repo, notification: n}
 }
 
+//func (s *service) GetAllTenders() []domain.Tender {
+//
+//}
+
 func (s *service) BotActivate(id, tenderId string, stepPercent, criticalPrice float64, isNeedApprove bool) {
 	// бот создает участие (фиксация в бд) на определенный юзер айди с опциями
 	//s.repo.CreateBotByID(id, tenderId, stepPercent, criticalPrice, isNeedApprove)
