@@ -4,13 +4,13 @@ import tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 
 var yes = tgbotapi.NewInlineKeyboardMarkup(
 	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("yes", "ордер разрешен "),
+		tgbotapi.NewInlineKeyboardButtonData("подтвердить", "ордер разрешен "),
 	),
 )
 
 var no = tgbotapi.NewInlineKeyboardMarkup(
 	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("no", "ордер отклонен"),
+		tgbotapi.NewInlineKeyboardButtonData("отклонить", "ордер отклонен"),
 	),
 )
 
@@ -21,9 +21,9 @@ func HandleCallBack(update tgbotapi.Update, bot *tgbotapi.BotAPI) {
 		//json.Unmarshal([]byte(update.CallbackQuery.Data), &action)
 
 		switch update.CallbackQuery.Message.Text {
-		case "yes":
+		case "подтвердить":
 			update.Message.ReplyMarkup = &yes
-		case "no":
+		case "отклонить":
 			update.Message.ReplyMarkup = &no
 
 		}
