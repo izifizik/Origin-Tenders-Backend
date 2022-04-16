@@ -51,7 +51,7 @@ func (h *handler) Register(router *gin.Engine) {
 		h.GenerateToken2(context, h.botService)
 	})
 	router.GET("/tenders", h.GetTenders)
-	router.GET("/:tender_id", h.GetTender)
+	router.GET("/tender/:tender_id", h.GetTender)
 	router.GET("/user/:uuid", h.GetUser)
 	router.POST("/bot/set_options")
 	router.GET("/ws/notification", h.NotificationWS)
@@ -183,7 +183,17 @@ func (h *handler) GetUser(c *gin.Context) {
 }
 
 func (h *handler) GetTender(c *gin.Context) {
-	h.botService.GetTenderByID(c.Param("tender_id"))
+	c.JSON(http.StatusOK, gin.H{
+		"ID":           c.Param("tender_id"),
+		"Name":         "Tender Name",
+		"TimeEnd":      time.Now().Add(time.Hour * 24),
+		"Description":  "link to tender: http://10.10.117.179:8080/tender/1",
+		"Filters":      []string{"tag1", "tag2"},
+		"StartPrice":   123123123.123,
+		"CurrentPrice": 1.11,
+		"Status":       "Open??? nujen li on",
+		"StepPercent":  0.5,
+	})
 }
 
 func (h *handler) GetTenders(c *gin.Context) {
