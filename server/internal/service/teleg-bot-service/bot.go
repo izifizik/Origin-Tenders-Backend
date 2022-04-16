@@ -44,13 +44,13 @@ func Run(repo mongodb.Repository) {
 
 	var yes = tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("yes", "11"),
+			tgbotapi.NewInlineKeyboardButtonData("yes", "разрешен ордер"),
 		),
 	)
 
 	var no = tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("no", "10"),
+			tgbotapi.NewInlineKeyboardButtonData("no", "ордер отклонен"),
 		),
 	)
 
@@ -70,13 +70,15 @@ func Run(repo mongodb.Repository) {
 
 				}
 
+				msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, update.CallbackQuery.Data)
+				msg.ReplyToMessageID = update.CallbackQuery.Message.MessageID
+
 				callback := tgbotapi.NewCallback(update.CallbackQuery.ID, update.CallbackQuery.Data)
 				if _, err := bot.Request(callback); err != nil {
 					panic(err)
 				}
 
 				// And finally, send a message containing the data received.
-				msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, update.CallbackQuery.Data)
 				if _, err := bot.Send(msg); err != nil {
 					panic(err)
 				}
