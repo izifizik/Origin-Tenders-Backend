@@ -191,6 +191,7 @@ func (h *handler) GetTenders(c *gin.Context) {
 
 	// дескрипцию для тендеров нормальную сделать
 	// занести эти тендеры в бд и доставать оттуда и отдавать
+	//tenders := h.botService.GetAllTenders()
 	tenders := []domain.Tender{
 		{
 			ID:           primitive.NewObjectID(),
