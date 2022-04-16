@@ -13,6 +13,7 @@ type Tender struct {
 	Filters      []string
 	StartPrice   float32
 	CurrentPrice float32
+	CurrentUser  primitive.ObjectID
 	Status       string
 	StepPercent  float32
 }

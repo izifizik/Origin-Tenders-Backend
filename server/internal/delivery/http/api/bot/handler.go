@@ -2,18 +2,22 @@ package bot
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"log"
 	"math/rand"
 	"net/http"
 	"origin-tender-backend/server/internal/delivery/http/api"
 	"origin-tender-backend/server/internal/domain"
 	botService "origin-tender-backend/server/internal/service/bot-service"
+	"strconv"
 	"time"
 )
 
 type handler struct {
 	botService botService.BotService
-	//tenderService tenderService.TenderService
+	// tenderService tenderService.TenderService
+	// notificationService
 }
 
 func NewBotHandler(service botService.BotService) api.Handler {
@@ -25,14 +29,42 @@ func (h *handler) Register(router *gin.Engine) {
 	router.GET("/tenders", h.GetTenders)
 	router.GET("/user/:uuid", h.GetUser)
 	router.POST("/bot/set_options")
+	router.GET("/ws/notifications", h.Notification)
 	//router.POST("/bot/proofToken")
+}
+
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+}
+
+func (h *handler) Notification(c *gin.Context) {
+	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		log.Println(err.Error())
+		return
+	}
+
+	go func() {
+		conn.WriteJSON(gin.H{
+			"id":            "3",
+			"type":          "participation",
+			"description":   "Бот сделал ставку в тендере ХХХ",
+			"tenderID":      "3",
+			"price":         2212,
+			"isNeedApprove": true,
+			"isApproved":    true,
+			"approve":       false,
+		})
+	}()
+	// отправка в бота (хз как)
 }
 
 func (h *handler) BotSetOptions(c *gin.Context) {
 	// создаем горутину которая крутит этого бота в тендере с определенными настройками
 }
 
-func (h *handler) Aproof(c *gin.Context) {
+func (h *handler) Approve(c *gin.Context) {
 	// когда автоматически бот уже не может подтверждать сделки будет вызыватсья этот поинт
 	// Работает следующим образом
 	// Бот в фоне ждет подтверждения => надо реализовать где то подтверждение транзакции
@@ -41,10 +73,9 @@ func (h *handler) Aproof(c *gin.Context) {
 
 func (h *handler) GetUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
-		"ID":            primitive.NewObjectID(),
-		"Name":          "Тетя Вася",
-		"Notifications": domain.Notifications{TgID: "asd"},
-		"Filters":       []string{"filter1", "filter2"},
+		"ID":      primitive.NewObjectID(),
+		"Name":    "Тетя Вася",
+		"Filters": []string{"filter1", "filter2"},
 		"TendersHistory": []domain.Tender{
 			{
 				ID:           primitive.NewObjectID(),
@@ -295,7 +326,7 @@ func (h *handler) GenerateToken(c *gin.Context) {
 	//token := h.botService.GenerateToken(dto.Type)
 	rand.Seed(time.Now().Unix())
 	c.JSON(http.StatusOK, gin.H{
-		"token": rand.Int(),
+		"token": strconv.Itoa(rand.Int()),
 	})
 	// отдает токен
 }
