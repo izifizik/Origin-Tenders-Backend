@@ -81,7 +81,7 @@ func (h *handler) RaiseEvent(c *gin.Context, s botService.BotService) {
 		users, err := s.GetTgUsers()
 
 		for _, u := range users {
-			err := actions.SendAcceptParticipationInTender(u.UserId, tender.Name, tender.StartPrice)
+			err := actions.SendAcceptParticipationInTender(u.UserId, tender)
 			if err != nil {
 				fmt.Println(err)
 			}
