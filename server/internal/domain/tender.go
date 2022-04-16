@@ -6,14 +6,13 @@ import (
 )
 
 type Tender struct {
-	ID                 primitive.ObjectID
-	TimeEnd            time.Time
-	Name               string
-	Description        string
-	Filters            []string
-	StartPrice         float32
-	CurrentPrice       float32
-	Status             string
-	MinimalStepPercent float32
-	MaxStepPercent     float32
+	ID           primitive.ObjectID
+	TimeEnd      time.Time
+	Name         string
+	Description  string
+	Filters      []string
+	StartPrice   float32
+	CurrentPrice float32
+	Status       string
+	StepPercent  float32
 }

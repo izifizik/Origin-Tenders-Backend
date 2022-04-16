@@ -33,3 +33,5 @@ func generateToken(seed uint64) string {
 	rand.Seed(int64(seed))
 	return strconv.Itoa(rand.Int())
 }
+
+func (s *service) StartServeTendor()

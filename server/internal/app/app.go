@@ -21,14 +21,15 @@ func Run() error {
 
 	router := gin.Default()
 	gin.SetMode(gin.DebugMode)
+	router.Use(CORSMiddleware())
 	server := &http.Server{
-		Addr:           cfg.App.Host + ":" + cfg.App.Port,
+		Addr:           "0.0.0.0:8080",
 		Handler:        router,
 		ReadTimeout:    time.Second * 15,
 		WriteTimeout:   time.Second * 15,
 		MaxHeaderBytes: 1 << 20,
 	}
-
+	fmt.Println(cfg.App.Port, cfg.App.Host)
 	repo := mongodb.NewRepo(cfg.Database.Client, cfg.Database.TPCollection)
 
 	service := botService.NewBotService(repo)
@@ -53,5 +54,21 @@ func gracefulShutdown(signals []os.Signal, closeItems ...io.Closer) {
 		if err != nil {
 			fmt.Printf("failed to close %v: %v", closer, err)
 		}
+	}
+}
+
+func CORSMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+
+		c.Next()
 	}
 }
