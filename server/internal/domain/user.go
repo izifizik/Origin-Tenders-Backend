@@ -1,9 +1,7 @@
 package domain
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
-
 type User struct {
-	ID   primitive.ObjectID
+	ID   string `bson:"_id"`
 	Name string
 	Notifications
 	Filters        []string

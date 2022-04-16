@@ -26,6 +26,33 @@ func NewRepo(client *mongo.Client, tpCollection *mongo.Collection,
 	}
 }
 
+func (r repo) CreateSiteUser(user domain.User) error {
+	_, err := r.userCollection.InsertOne(context.Background(), bson.D{
+		{"name", user.Name},
+	})
+
+	return err
+}
+
+func (r repo) GetSiteUserByName(name string) (domain.User, error) {
+	var user domain.User
+
+	err := r.userCollection.FindOne(context.Background(),
+		bson.D{{"name", name}}).Decode(&user)
+
+	return user, err
+}
+
+func (r repo) GetSiteUser(objectId string) (domain.User, error) {
+	var user domain.User
+	id, _ := primitive.ObjectIDFromHex(objectId)
+
+	err := r.userCollection.FindOne(context.Background(),
+		bson.D{{"_id", id}}).Decode(&user)
+
+	return user, err
+}
+
 func (r repo) SaveToken(ID string, token string) error {
 	_, err := r.tpCollection.InsertOne(context.Background(), token)
 	if err != nil {
@@ -175,9 +202,9 @@ func (r repo) ApproveProofToken(name string, token string) (string, error) {
 
 	if proofToken.Token != token {
 		status = "invalid token"
+	} else {
+		status = proofToken.SiteId
 	}
-
-	status = proofToken.SiteId
 
 	return status, err
 }

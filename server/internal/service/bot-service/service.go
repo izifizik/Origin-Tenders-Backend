@@ -5,6 +5,7 @@ import (
 	"encoding/binary"
 	"io"
 	"math/rand"
+	"origin-tender-backend/server/internal/domain"
 	"origin-tender-backend/server/internal/repository/mongodb"
 	"strconv"
 )
@@ -15,6 +16,14 @@ type service struct {
 
 func NewBotService(repo mongodb.Repository) BotService {
 	return &service{repo: repo}
+}
+
+func (s *service) GetSiteUserByName(name string) (domain.User, error) {
+	return s.repo.GetSiteUserByName(name)
+}
+
+func (s *service) CreateSiteUser(user domain.User) error {
+	return s.repo.CreateSiteUser(user)
 }
 
 // siteId - User collection ObjectId

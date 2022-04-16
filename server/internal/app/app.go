@@ -36,9 +36,14 @@ func Run() error {
 	repo := mongodb.NewRepo(cfg.Database.Client, cfg.Database.TPCollection, cfg.Database.UserCollection,
 		cfg.Database.ProofTokenCollection, cfg.Database.TgUserCollection)
 
-	teleBotService.Run(repo)
-
 	service := botService.NewBotService(repo)
+
+	//err := service.CreateSiteUser(domain.User{Name: "Dimasik)"})
+	//user, err := service.GetSiteUserByName("Dimasik)")
+	//
+	//fmt.Println(user.ID, err)
+
+	go teleBotService.Run(repo)
 
 	handler := bot.NewBotHandler(service)
 

@@ -5,6 +5,14 @@ import (
 )
 
 type Repository interface {
+	CreateTender(tender domain.Tender) error
+
+	CreateOrder(order domain.Order) error
+
+	GetSiteUser(objectId string) (domain.User, error)
+	GetSiteUserByName(name string) (domain.User, error)
+	CreateSiteUser(user domain.User) error
+
 	GetUserByTgId(id int64) (domain.TelegramUser, error)
 	GetTgUser(name string) (domain.TelegramUser, string, error)
 	CreateNewTgUser(id int64, name string, token string) (domain.TelegramUser, string, error)

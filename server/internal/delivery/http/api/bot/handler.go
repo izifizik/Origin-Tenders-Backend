@@ -1,6 +1,7 @@
 package bot
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"math/rand"
@@ -8,6 +9,7 @@ import (
 	"origin-tender-backend/server/internal/delivery/http/api"
 	"origin-tender-backend/server/internal/domain"
 	botService "origin-tender-backend/server/internal/service/bot-service"
+	"strconv"
 	"time"
 )
 
@@ -21,11 +23,36 @@ func NewBotHandler(service botService.BotService) api.Handler {
 }
 
 func (h *handler) Register(router *gin.Engine) {
-	router.POST("/bot/generateToken", h.GenerateToken)
+	router.POST("/bot/generateToken", func(context *gin.Context) {
+		h.GenerateToken(context)
+	})
+	router.POST("/bot/generateToken2", func(context *gin.Context) {
+		h.GenerateToken2(context, h.botService)
+	})
 	router.GET("/tenders", h.GetTenders)
 	router.GET("/user/:uuid", h.GetUser)
 	router.POST("/bot/set_options")
 	//router.POST("/bot/proofToken")
+
+	router.POST("/order", func(context *gin.Context) {
+		h.CreateOrder(context, h.botService)
+	})
+
+}
+
+func (h *handler) CreateOrder(c *gin.Context, s botService.BotService) {
+	var order domain.Order
+	err := c.ShouldBindJSON(&order)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	err = s.CreateOrder(order)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	c.JSON(200, gin.H{})
 }
 
 func (h *handler) BotSetOptions(c *gin.Context) {
@@ -282,11 +309,41 @@ func (h *handler) GetTenders(c *gin.Context) {
 	})
 }
 
+func (h *handler) GenerateToken2(c *gin.Context, s botService.BotService) {
+	// принимает тип(ник\груп айди)
+	var user domain.User
+	err := c.ShouldBindJSON(&user)
+	if err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
+	//token := h.botService.GenerateToken(dto.Type)
+	rand.Seed(time.Now().Unix())
+
+	seed := strconv.Itoa(int(rand.Int()))
+
+	user, err = s.GetSiteUserByName(user.Name)
+
+	err = s.CreateTgToken(user.Name, seed, user.ID)
+
+	c.JSON(http.StatusOK, gin.H{
+		"token": seed,
+	})
+	// отдает токен
+}
+
 func (h *handler) GenerateToken(c *gin.Context) {
 	// принимает тип(ник\груп айди)
+	var user domain.User
+	err := c.ShouldBindJSON(&user)
+	if err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
 	var dto TokenDTO
 
-	err := c.ShouldBindJSON(&dto)
+	err = c.ShouldBindJSON(&dto)
 	if err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return

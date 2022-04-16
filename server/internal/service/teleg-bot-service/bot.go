@@ -1,9 +1,12 @@
 package teleBotService
 
 import (
+	"encoding/json"
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"origin-tender-backend/server/internal/domain"
 	"origin-tender-backend/server/internal/repository/mongodb"
+	"origin-tender-backend/server/internal/service/teleg-bot-service/actions"
 )
 
 func Run(repo mongodb.Repository) {
@@ -39,9 +42,32 @@ func Run(repo mongodb.Repository) {
 
 	updates := bot.GetUpdatesChan(u)
 
+	actions.TgBot = bot
+
 	for update := range updates {
+
+		if update.CallbackQuery != nil {
+			if update.CallbackQuery.Data != "" {
+
+				var action domain.TgAction
+				json.Unmarshal([]byte(update.CallbackQuery.Data), &action)
+
+				switch action.Type {
+				case "approve":
+					if action.Check == true {
+						// тут в дате будет название тендера (оно уникально)
+
+					}
+
+				}
+
+			}
+		}
+
 		if update.Message != nil {
 			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "no text")
+
+			err := actions.SendAcceptParticipationInTender(update.SentFrom().ID, " sas", 223)
 
 			user, err := repo.GetUserByTgId(update.SentFrom().ID)
 			if err != nil {
@@ -84,6 +110,7 @@ func Run(repo mongodb.Repository) {
 
 				if status == "invalid token" {
 					msg.Text = "incorrect token, try again"
+					bot.Send(msg)
 					continue
 				}
 
