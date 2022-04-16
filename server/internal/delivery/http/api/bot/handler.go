@@ -108,6 +108,20 @@ func (h *handler) RaiseEvent(c *gin.Context, s botService.BotService) {
 			fmt.Println(len(users))
 		}
 
+	} else if event.Type == "order" {
+		var order domain.Order
+		err := json.Unmarshal([]byte(event.Data), &order)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		err = s.CreateOrder(order)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		//TODO: do stuff
+
 	}
 
 }

@@ -14,7 +14,6 @@ func (r *repo) CreateTender(tender domain.Tender) {
 		{"timeStamp", time.Now()},
 		{"Name", tender.Name},
 		{"Description", tender.Description},
-		{"ShortDescription", tender.ShortDescription},
 		{"StartPrice", tender.StartPrice},
 		{"StartPrice", tender.StartPrice},
 		{"status", "open"},
