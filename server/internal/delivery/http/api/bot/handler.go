@@ -51,6 +51,7 @@ func (h *handler) Register(router *gin.Engine) {
 		h.GenerateToken2(context, h.botService)
 	})
 	router.GET("/tenders", h.GetTenders)
+	router.GET("/:tender_id", h.GetTender)
 	router.GET("/user/:uuid", h.GetUser)
 	router.POST("/bot/set_options")
 	router.GET("/ws/notification", h.NotificationWS)
@@ -65,15 +66,15 @@ func (h *handler) Register(router *gin.Engine) {
 	})
 
 	router.GET("/bot/:id/filters")
-	router.POST("/bot/filters")
+	router.POST("/bot/:id/filters")
 	router.PUT("/bot/filters")
 	router.DELETE("/bot/filters")
 
 }
 
-func (h *handler) GetFilters(c *gin.Context) {
-
-}
+//func (h *handler) GetFilters(c *gin.Context) {
+//
+//}
 
 func (h *handler) RaiseEvent(c *gin.Context, s botService.BotService) {
 	var event domain.ServiceEvent
@@ -181,8 +182,15 @@ func (h *handler) GetUser(c *gin.Context) {
 	})
 }
 
+func (h *handler) GetTender(c *gin.Context) {
+	h.botService.GetTenderByID(c.Param("tender_id"))
+}
+
 func (h *handler) GetTenders(c *gin.Context) {
 	// tenderh.tenderService.GetByID(c.Param("tenderID"))
+
+	// дескрипцию для тендеров нормальную сделать
+	// занести эти тендеры в бд и доставать оттуда и отдавать
 	tenders := []domain.Tender{
 		{
 			ID:           primitive.NewObjectID(),

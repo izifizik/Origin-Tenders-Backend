@@ -20,4 +20,7 @@ type BotService interface {
 	CreateTgToken(name string, token string, siteId primitive.ObjectID) error
 
 	SentNotification(conn *websocket.Conn)
+
+	GetTenderByID(id string) domain.Tender
+	CreateTender(tender domain.Tender)
 }

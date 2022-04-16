@@ -27,16 +27,22 @@ func NewRepo(client *mongo.Client, tpCollection *mongo.Collection,
 }
 
 func (r repo) CreateBotByID(id, tenderId string, stepPercent, criticalPrice float64, isNeedApprove bool) {
-	//filter := bson.M{"_id": primitive.ObjectIDFromHex(id)}
-	//var user domain.User
-	//err := r.userCollection.FindOne(context.Background(), filter).Decode(&user)
-	//if err != nil {
-	//	fmt.Println("error to take user from bd: " + err.Error())
-	//}
-	//tender, err := primitive.ObjectIDFromHex(tenderId)
-	//user.Bot = append(user.Bot, domain.Bot{TenderID: tender, StepPercent: stepPercent, CriticalPrice: criticalPrice, IsNeedApprove: isNeedApprove})
+	userId, err := primitive.ObjectIDFromHex(id)
+	filter := bson.M{"_id": userId}
+	var user domain.User
+	err = r.userCollection.FindOne(context.Background(), filter).Decode(&user)
+	if err != nil {
+		fmt.Println("error to take user from bd: " + err.Error())
+		return
+	}
+	tender, err := primitive.ObjectIDFromHex(tenderId)
+	user.Bot = append(user.Bot, domain.Bot{TenderID: tender, StepPercent: stepPercent, CriticalPrice: criticalPrice, IsNeedApprove: isNeedApprove})
 
-	//r.userCollection.UpdateOne(context.Background(), filter)
+	_, err = r.userCollection.UpdateOne(context.Background(), filter, user)
+	if err != nil {
+		fmt.Println("error to take user from bd: " + err.Error())
+		return
+	}
 }
 
 func (r repo) CreateSiteUser(user domain.User) error {
