@@ -203,7 +203,7 @@ func (r repo) CreateToken(name string, token string, siteId primitive.ObjectID) 
 	}).Decode(&proofedToken)
 
 	if proofedToken.Id != "" {
-		r.proofTokenCollection.DeleteOne(context.Background(), bson.D{{"name", name}})
+		r.proofTokenCollection.DeleteOne(context.Background(), bson.D{{"_id", proofedToken.Id}})
 	}
 
 	_, err := r.proofTokenCollection.InsertOne(context.Background(), bson.D{
