@@ -158,7 +158,7 @@ func (h *handler) GetUser(c *gin.Context) {
 		"Filters": []string{"filter1", "filter2"},
 		"TendersHistory": []domain.Tender{
 			{
-				ID:           primitive.NewObjectID(),
+				ID:           "1",
 				Name:         "Tender1",
 				TimeEnd:      time.Now().Add(time.Hour * 24),
 				Description:  "asdasdasdasd asd as da sd asd ",
@@ -168,7 +168,7 @@ func (h *handler) GetUser(c *gin.Context) {
 				Status:       "Open??? nujen li on",
 				StepPercent:  0.5,
 			}, {
-				ID:           primitive.NewObjectID(),
+				ID:           "2",
 				Name:         "Tender2",
 				TimeEnd:      time.Now().Add(time.Hour * 24),
 				Description:  "asdasdasdasd asd as da sd asd ",
@@ -184,15 +184,16 @@ func (h *handler) GetUser(c *gin.Context) {
 
 func (h *handler) GetTender(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
-		"ID":           c.Param("tender_id"),
-		"Name":         "Tender Name",
-		"TimeEnd":      time.Now().Add(time.Hour * 24),
-		"Description":  "link to tender: http://10.10.117.179:8080/tender/" + c.Param("tender_id"),
-		"Filters":      []string{"Price filter"},
-		"StartPrice":   123123123.123,
-		"CurrentPrice": 1.11,
-		"Status":       "Open",
-		"StepPercent":  0.5,
+		"ID":               c.Param("tender_id"),
+		"Name":             "Закуп пиломатериала из древесины",
+		"TimeEnd":          time.Now().Add(time.Hour * 24),
+		"Description":      "Древесина хвойных пород не ниже 3 сорта по ГОСТ 8486 и не ниже 2 сорта лиственных пород по ГОСТ 2695",
+		"ShortDescription": "Брус, доска обрезная /необрезная. Количество пиломатериала - 500 тыс.",
+		"Filters":          []string{"Фильтр по цене"},
+		"StartPrice":       2300050.50,
+		"CurrentPrice":     2145600.45,
+		"Status":           "Активна",
+		"StepPercent":      0.5,
 	})
 }
 
@@ -204,17 +205,17 @@ func (h *handler) GetTenders(c *gin.Context) {
 	//tenders := h.botService.GetAllTenders()
 	tenders := []domain.Tender{
 		{
-			ID:           primitive.NewObjectID(),
-			Name:         "Tender Name",
+			ID:           "1",
+			Name:         "Покупка разеток тип С",
 			TimeEnd:      time.Now().Add(time.Hour * 24),
-			Description:  "link to tender: http://10.10.117.179:8080/tender/" + "1",
+			Description:  "Металлческие листы: \n Лист 10мм г/к ГОСТ 1577-93 1500*6000 \n Лист 5мм г/к ГОСТ 14637-89 1500*6000 \n Лист 8мм г/к ГОСТ 14637-89 1500*3000",
 			Filters:      []string{"Price filter"},
-			StartPrice:   123123123.123,
-			CurrentPrice: 1.11,
-			Status:       "Open",
+			StartPrice:   5000000,
+			CurrentPrice: 4850000.50,
+			Status:       "Активна",
 			StepPercent:  0.5,
 		}, {
-			ID:           primitive.NewObjectID(),
+			ID:           "2",
 			Name:         "Tender Name",
 			TimeEnd:      time.Now().Add(time.Hour * 24),
 			Description:  "link to tender: http://10.10.117.179:8080/tender/" + "2",
@@ -224,7 +225,7 @@ func (h *handler) GetTenders(c *gin.Context) {
 			Status:       "Open",
 			StepPercent:  0.5,
 		}, {
-			ID:           primitive.NewObjectID(),
+			ID:           "3",
 			Name:         "Tender Name",
 			TimeEnd:      time.Now().Add(time.Hour * 24),
 			Description:  "link to tender: http://10.10.117.179:8080/tender/" + "3",
@@ -234,18 +235,19 @@ func (h *handler) GetTenders(c *gin.Context) {
 			Status:       "Open",
 			StepPercent:  0.5,
 		}, {
-			ID:           primitive.NewObjectID(),
-			Name:         "Tender Name",
-			TimeEnd:      time.Now().Add(time.Hour * 24),
-			Description:  "link to tender: http://10.10.117.179:8080/tender/" + "4",
-			Filters:      []string{"Price filter"},
-			StartPrice:   123123123.123,
-			CurrentPrice: 1.11,
-			Status:       "Open",
-			StepPercent:  0.5,
+			ID:               "4",
+			Name:             "Tender Name",
+			TimeEnd:          time.Now().Add(time.Hour * 24),
+			Description:      "Древесина хвойных пород не ниже 3 сорта по ГОСТ 8486 и не ниже 2 сорта лиственных пород по ГОСТ 2695",
+			ShortDescription: "Брус, доска обрезная /необрезная. Количество пиломатериала - 500 тыс.",
+			Filters:          []string{"Price filter"},
+			StartPrice:       123123123.123,
+			CurrentPrice:     1.11,
+			Status:           "Активна",
+			StepPercent:      0.5,
 		},
 		{
-			ID:           primitive.NewObjectID(),
+			ID:           "5",
 			Name:         "Tender Name",
 			TimeEnd:      time.Now().Add(time.Hour * 24),
 			Description:  "link to tender: http://10.10.117.179:8080/tender/" + "5",
