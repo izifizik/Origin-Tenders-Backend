@@ -64,6 +64,15 @@ func (h *handler) Register(router *gin.Engine) {
 		h.RaiseEvent(context, h.botService)
 	})
 
+	router.GET("/bot/:id/filters")
+	router.POST("/bot/filters")
+	router.PUT("/bot/filters")
+	router.DELETE("/bot/filters")
+
+}
+
+func (h *handler) GetFilters(c *gin.Context) {
+
 }
 
 func (h *handler) RaiseEvent(c *gin.Context, s botService.BotService) {
