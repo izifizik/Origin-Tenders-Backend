@@ -394,8 +394,8 @@ func (h *handler) GetTenders(c *gin.Context) {
 
 func (h *handler) GenerateToken2(c *gin.Context, s botService.BotService) {
 	// принимает тип(ник\груп айди)
-	var user domain.User
-	err := c.ShouldBindJSON(&user)
+	var dto TokenDTO
+	err := c.ShouldBindJSON(&dto)
 	if err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
@@ -406,7 +406,7 @@ func (h *handler) GenerateToken2(c *gin.Context, s botService.BotService) {
 
 	seed := strconv.Itoa(rand.Int())
 
-	user, err = s.GetSiteUserByName(user.Name)
+	user, err := s.GetSiteUserByName(dto.Value)
 
 	err = s.CreateTgToken(user.Name, seed, user.ID)
 
