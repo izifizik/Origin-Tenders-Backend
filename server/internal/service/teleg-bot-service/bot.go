@@ -42,25 +42,36 @@ func Run(repo mongodb.Repository) {
 
 	actions.TgBot = bot
 
+	var yes = tgbotapi.NewInlineKeyboardMarkup(
+		tgbotapi.NewInlineKeyboardRow(
+			tgbotapi.NewInlineKeyboardButtonData("yes", "11"),
+		),
+	)
+
+	var no = tgbotapi.NewInlineKeyboardMarkup(
+		tgbotapi.NewInlineKeyboardRow(
+			tgbotapi.NewInlineKeyboardButtonData("no", "10"),
+		),
+	)
+
 	for update := range updates {
 
-		//if update.CallbackQuery != nil {
-		//	if update.CallbackQuery.Data != "" {
-		//
-		//		var action domain.TgAction
-		//		json.Unmarshal([]byte(update.CallbackQuery.Data), &action)
-		//
-		//		switch action.Type {
-		//		case "approve":
-		//			if action.Check == true {
-		//				// тут в дате будет название тендера (оно уникально)
-		//
-		//			}
-		//
-		//		}
-		//
-		//	}
-		//}
+		if update.CallbackQuery != nil {
+			if update.CallbackQuery.Data != "" {
+
+				//var action domain.TgAction
+				//json.Unmarshal([]byte(update.CallbackQuery.Data), &action)
+
+				switch update.CallbackQuery.Message.Text {
+				case "yes":
+					update.Message.ReplyMarkup = &yes
+				case "no":
+					update.Message.ReplyMarkup = &no
+
+				}
+
+			}
+		}
 
 		if update.Message != nil {
 			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "no text")
@@ -75,7 +86,7 @@ func Run(repo mongodb.Repository) {
 			if user.UserId == 0 {
 				userName := update.SentFrom().UserName
 				fmt.Println(userName)
-				msg.Text = "👋 Это бот для автоматизации получения уведомлений 👍\n с сайта zakupku.mos.ru, пожалуйста, \n Введите  ⚠️пожалуйста⚠️ введите ваш токен \n с сайта для получения доступа к функциям бота 🌚"
+				msg.Text = "👋 Это бот для автоматизации получения уведомлений 👋\n с сайта zakupku.mos.ru, пожалуйста, \n Введите  введите ваш токен \n с сайта для получения доступа к функциям бота 🌚"
 
 				tgUser, _, _ := repo.CreateNewTgUser(update.SentFrom().ID, "", "")
 
