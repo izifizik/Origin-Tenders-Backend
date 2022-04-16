@@ -12,8 +12,8 @@ import (
 func (r *repo) CreateTender(tender domain.Tender) {
 	_, err := r.proofTokenCollection.InsertOne(context.Background(), bson.D{
 		{"timeStamp", time.Now()},
-		{"MinimalStepPercent", tender.MinimalStepPercent},
-		{"MaxStepPercent", tender.MaxStepPercent},
+		//{"MinimalStepPercent", tender.MinimalStepPercent},
+		//{"MaxStepPercent", tender.MaxStepPercent},
 		{"Name", tender.Name},
 		{"Description", tender.Description},
 		{"StartPrice", tender.StartPrice},
