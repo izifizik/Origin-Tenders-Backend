@@ -195,6 +195,17 @@ func (r repo) UpdateUserStateById(idStr string, state string) error {
 //}
 
 func (r repo) CreateToken(name string, token string, siteId primitive.ObjectID) error {
+
+	var proofedToken domain.ProofToken
+
+	r.proofTokenCollection.FindOne(context.Background(), bson.D{
+		{"name", name},
+	}).Decode(&proofedToken)
+
+	if proofedToken.Id != "" {
+		r.proofTokenCollection.DeleteOne(context.Background(), bson.D{{"name", name}})
+	}
+
 	_, err := r.proofTokenCollection.InsertOne(context.Background(), bson.D{
 		{"name", name},
 		{"token", token},
