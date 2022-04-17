@@ -1,13 +1,19 @@
-{
-  "_id": "625b288a80da24bdc5a15534",
-  "timeEnd": "0001-01-01T00:00:00Z",
-  "name": "Покупка разеток тип С",
-  "description": "",
-  "short_description": "",
-  "owner": "",
-  "filters": null,
-  "startPrice": 0,
-  "currentPrice": 12.3,
-  "status": "open",
-  "step_percent": 0
-}
+[
+  {
+    "timeEnd": "0001-01-01T00:00:00Z",
+    "name": "Покупка разеток тип С",
+    "short_description": "Брус, доска обрезная /необрезная. Количество пиломатериала - 500 тыс.",
+    "owner": "",
+    "filters": null,
+    "start_price": 539500,
+    "current_price": 12.3,
+    "step_percent": 0,
+    "timeStamp": {
+      "$date": {
+        "$numberLong": "1650141314287"
+      }
+    },
+    "description": "Древесина хвойных пород не ниже 3 сорта по ГОСТ 8486 и не ниже 2 сорта лиственных пород по ГОСТ 2695",
+    "status": "Активна"
+  }
+]
