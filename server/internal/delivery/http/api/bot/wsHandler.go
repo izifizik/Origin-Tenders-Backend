@@ -12,9 +12,13 @@ import (
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
 }
 
 func (h *handler) initRead(c *gin.Context) (*websocket.Conn, error) {
+	upgrader.CheckOrigin(c.Request)
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		log.Println("error with ws connect: " + err.Error())
@@ -43,6 +47,7 @@ func (h *handler) Notify(c *gin.Context) {
 		}
 
 		conn.WriteMessage(1, []byte("ok"))
+
 	}
 
 }

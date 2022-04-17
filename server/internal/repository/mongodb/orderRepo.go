@@ -4,16 +4,19 @@ import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"log"
 	"origin-tender-backend/server/internal/domain"
 )
 
 func (r repo) CreateOrder(order domain.Order) error {
 	_, err := r.ordersCollection.InsertOne(context.Background(), order)
 	if err != nil {
+		log.Print("Here1")
 		return err
 	}
 	userId, err := primitive.ObjectIDFromHex(order.TenderId)
 	if err != nil {
+		log.Print("Here2")
 		return err
 	}
 	filter := bson.M{"_id": userId}
@@ -22,6 +25,7 @@ func (r repo) CreateOrder(order domain.Order) error {
 		bson.D{{"current_price", order.Price},
 			{"owner", order.UserId}})
 	if err != nil {
+		log.Print("Here3")
 		return err
 	}
 

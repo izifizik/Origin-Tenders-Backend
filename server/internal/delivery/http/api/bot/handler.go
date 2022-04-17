@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"log"
 	"math/rand"
 	"net/http"
 	"origin-tender-backend/server/internal/delivery/http/api"
@@ -73,6 +74,7 @@ func (h *handler) RaiseEvent(c *gin.Context) {
 	var event domain.ServiceEvent
 	err := c.ShouldBindJSON(&event)
 	if err != nil {
+		log.Println(err.Error())
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
@@ -81,7 +83,7 @@ func (h *handler) RaiseEvent(c *gin.Context) {
 		var tender domain.Tender
 		err = json.Unmarshal([]byte(event.Data), &tender)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println(err.Error())
 		}
 		//fmt.Println(tender.Name)
 
@@ -96,7 +98,7 @@ func (h *handler) RaiseEvent(c *gin.Context) {
 		for _, u := range users {
 			err = actions.SendAcceptParticipationInTender(u.UserId, tender)
 			if err != nil {
-				fmt.Println(err)
+				fmt.Println(err.Error())
 			}
 		}
 
@@ -115,18 +117,21 @@ func (h *handler) RaiseEvent(c *gin.Context) {
 		var order domain.Order
 		err = json.Unmarshal([]byte(event.Data), &order)
 		if err != nil {
+			log.Println("unmarsh" + err.Error())
 			c.AbortWithStatus(http.StatusInternalServerError)
 			return
 		}
 
 		err = h.botService.CreateOrder(order)
 		if err != nil {
+			log.Println("CreateOrder" + err.Error())
 			c.AbortWithStatus(http.StatusInternalServerError)
 			return
 		}
 
 		orderData, err := json.Marshal(order)
 		if err != nil {
+			log.Println("Marshal" + err.Error())
 			c.AbortWithStatus(http.StatusInternalServerError)
 			return
 		}
@@ -158,16 +163,16 @@ func (h *handler) CreateOrder(c *gin.Context) {
 
 func (h *handler) GetTender(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
-		"ID":               c.Param("tender_id"),
-		"Name":             "Закуп пиломатериала из древесины",
-		"TimeEnd":          time.Now().Add(time.Hour * 24),
-		"Description":      "Древесина хвойных пород не ниже 3 сорта по ГОСТ 8486 и не ниже 2 сорта лиственных пород по ГОСТ 2695",
-		"ShortDescription": "Брус, доска обрезная /необрезная. Количество пиломатериала - 500 тыс.",
-		"Filters":          []string{"Фильтр по цене"},
-		"StartPrice":       2300050.50,
-		"CurrentPrice":     2145600.45,
-		"Status":           "Активна",
-		"StepPercent":      0.5,
+		"id":                c.Param("tender_id"),
+		"name":              "Закуп пиломатериала из древесины",
+		"time_end":          time.Now().Add(time.Hour * 24),
+		"description":       "Древесина хвойных пород не ниже 3 сорта по ГОСТ 8486 и не ниже 2 сорта лиственных пород по ГОСТ 2695",
+		"short_description": "Брус, доска обрезная /необрезная. Количество пиломатериала - 500 тыс.",
+		"filters":           []string{"Фильтр по цене"},
+		"start_price":       2300050.50,
+		"current_price":     2145600.45,
+		"status":            "Активна",
+		"step_percent":      0.5,
 	})
 }
 
