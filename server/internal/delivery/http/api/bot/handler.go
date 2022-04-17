@@ -46,6 +46,7 @@ func (h *handler) Register(router *gin.Engine) {
 	router.POST("/bot/generateToken2", h.GenerateToken)
 
 	router.POST("/order", h.CreateOrder)
+	router.GET("/orders/:tender_id", h.GetOrdersForTender)
 	router.GET("/tenders", h.GetTenders)
 	router.GET("/tender/:tender_id", h.GetTender)
 
@@ -142,6 +143,17 @@ func (h *handler) RaiseEvent(c *gin.Context) {
 		fmt.Println("uncnown type!")
 	}
 
+}
+
+func (h *handler) GetOrdersForTender(c *gin.Context) {
+	tenderId := c.Param("tender_id")
+
+	orders, err := h.botService.GetTenderOrders(tenderId)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	c.JSON(200, orders)
 }
 
 func (h *handler) CreateOrder(c *gin.Context) {
