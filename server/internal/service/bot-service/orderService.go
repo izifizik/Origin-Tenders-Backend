@@ -1,8 +1,10 @@
 package botService
 
 import (
+	"encoding/json"
 	"fmt"
 	"origin-tender-backend/server/internal/domain"
+	"origin-tender-backend/server/internal/service/wsActions"
 )
 
 func (s *service) CreateOrder(order domain.Order) error {
@@ -14,6 +16,9 @@ func (s *service) CreateOrder(order domain.Order) error {
 	}
 
 	tender.CurrentPrice = order.Price
+
+	data, err := json.Marshal(&order)
+	wsActions.NotifyAllBet(string(data))
 
 	err = s.UpdateTender(order.TenderId, tender)
 	if err != nil {
