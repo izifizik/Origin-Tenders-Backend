@@ -22,11 +22,14 @@ func NewBotService(repo mongodb.Repository) BotService {
 	return &service{repo: repo, notification: n}
 }
 
+// че то не так как зауманно
 func (s *service) BotSetup(id, tenderID, alg, tpe string, procent, minimal, critical float64, isApprove bool) {
 	switch alg {
 	case "to_small":
 		if tpe == "standard" {
 			for { // правильно конечно делать это с получением извне но и фор пока что тоже выглядит не плохо ))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+				log.Println("user: " + id + ", alg: " + alg)
+
 				elementOfSurprise := time.Duration(rand.Intn(5))
 
 				tender, err := s.repo.GetTenderByID(tenderID)
@@ -63,6 +66,8 @@ func (s *service) BotSetup(id, tenderID, alg, tpe string, procent, minimal, crit
 		}
 
 		for {
+			log.Println("user: " + id + ", alg: " + alg)
+
 			elementOfSurprise := time.Duration(rand.Intn(5))
 
 			tender, err := s.repo.GetTenderByID(tenderID)
@@ -107,6 +112,7 @@ func (s *service) BotSetup(id, tenderID, alg, tpe string, procent, minimal, crit
 			break
 		}
 		for {
+			log.Println("user: " + id + ", alg: " + alg)
 			elementOfSurprise := time.Duration(rand.Intn(50))
 			tender, err := s.repo.GetTenderByID(tenderID)
 			if err != nil {
@@ -137,6 +143,8 @@ func (s *service) BotSetup(id, tenderID, alg, tpe string, procent, minimal, crit
 		}
 	case "curr_procent":
 		for {
+			log.Println("user: " + id + ", alg: " + alg)
+
 			tender, err := s.repo.GetTenderByID(tenderID)
 			if err != nil {
 				continue

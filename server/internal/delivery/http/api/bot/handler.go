@@ -55,6 +55,8 @@ func (h *handler) Register(router *gin.Engine) {
 	router.GET("/ws/session/:id", h.Session)
 
 	router.POST("/test/event", h.RaiseEvent)
+
+	router.POST("/bot/setup", h.SetupBot)
 }
 
 func (h *handler) SetupBot(c *gin.Context) {
@@ -62,6 +64,7 @@ func (h *handler) SetupBot(c *gin.Context) {
 
 	err := c.ShouldBindJSON(&dto)
 	if err != nil {
+		log.Println(err.Error())
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
