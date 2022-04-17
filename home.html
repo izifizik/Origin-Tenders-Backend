@@ -28,26 +28,26 @@
     let betsSessions;
     let betsNotifs;
 
-
+    let hostUrl = 'ws://localhost:8080'
 
 
 
     function connBets(){
-        betsConn = new WebSocket('ws://localhost:8080/ws/bets/123');
+        betsConn = new WebSocket(hostUrl+'/ws/bets/123');
         betsConn.onmessage = (msg) => {
             console.log(msg)
         }
     }
 
     function connNitifications(){
-        betsSessions = new WebSocket('ws://localhost:8080/ws/session/123');
+        betsSessions = new WebSocket(hostUrl+'/ws/session/123');
         betsSessions.onmessage = (msg) => {
             console.log(msg)
         }
     }
 
     function connSession(){
-        betsNotifs = new WebSocket('ws://localhost:8080/ws/notify/123');
+        betsNotifs = new WebSocket(hostUrl+'/ws/notify/123');
         betsNotifs.onmessage = (msg) => {
             console.log(msg)
         }
