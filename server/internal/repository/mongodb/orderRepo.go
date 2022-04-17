@@ -27,9 +27,6 @@ func (r repo) CreateOrder(order domain.Order) error {
 	return err
 }
 
-	return nil
-}
-
 func (r repo) GetOrderById(objectId string) (domain.Order, error) {
 	var order domain.Order
 	userId, err := primitive.ObjectIDFromHex(objectId)

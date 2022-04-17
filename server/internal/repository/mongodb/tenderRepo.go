@@ -20,7 +20,7 @@ func (r *repo) CreateTender(tender domain.Tender) error {
 }
 
 func (r *repo) UpdateTender(filter interface{}, tender domain.Tender) error {
-	_, err := r.tendersCollection.UpdateOne(context.Background(), filter, tender)
+	_, err := r.tendersCollection.UpdateOne(context.Background(), filter, bson.D{{"$set", tender}})
 
 	return err
 }
