@@ -1,5 +1,0 @@
-package sessionRunner
-
-func Run() {
-
-}

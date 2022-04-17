@@ -6,19 +6,17 @@ import (
 )
 
 type Repository interface {
-	CreateTender(tender domain.Tender) error
-	GetTenderByID(id string) domain.Tender
-	GetTenderOrders(tenderId string) ([]domain.Order, error)
+	CreateTender(tender domain.Tender) error        // ok
+	GetTenderByID(id string) (domain.Tender, error) // ok
 
-	CreateOrder(order domain.Order) error
+	CreateOrder(order domain.Order) error //ok
 
-	GetTgUsers() ([]domain.TelegramUser, error)
+	GetTgUsers() ([]domain.TelegramUser, error) //ok
 
-	GetSiteUser(objectId string) (domain.User, error)
-	GetSiteUserByName(name string) (domain.User, error)
-	CreateSiteUser(user domain.User) error
+	GetSiteUserByName(name string) (domain.User, error) //ok
+	CreateSiteUser(user domain.User) error              //ok
 
-	GetUserByTgId(id int64) (domain.TelegramUser, error)
+	GetUserByTgId(id int64) (domain.TelegramUser, error) //ok
 	GetTgUser(name string) (domain.TelegramUser, string, error)
 	CreateNewTgUser(id int64, name string, token string) (domain.TelegramUser, string, error)
 	UpdateUserStateById(id string, state string) error
@@ -30,6 +28,4 @@ type Repository interface {
 
 	SaveToken(ID string, token string) error
 	ProofToken(ID string, token string) error
-
-	CreateBotByID(id, tenderId string, stepPercent, criticalPrice float64, isNeedApprove bool)
 }

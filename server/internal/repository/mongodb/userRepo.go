@@ -18,9 +18,11 @@ func (r repo) GetSiteUserByName(name string) (domain.User, error) {
 
 func (r repo) GetSiteUser(objectId string) (domain.User, error) {
 	var user domain.User
-	id, _ := primitive.ObjectIDFromHex(objectId)
-
-	err := r.userCollection.FindOne(context.Background(),
+	id, err := primitive.ObjectIDFromHex(objectId)
+	if err != nil {
+		return domain.User{}, err
+	}
+	err = r.userCollection.FindOne(context.Background(),
 		bson.D{{"_id", id}}).Decode(&user)
 
 	return user, err

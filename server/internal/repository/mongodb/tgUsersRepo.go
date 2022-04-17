@@ -9,21 +9,15 @@ import (
 func (r repo) GetTgUsers() ([]domain.TelegramUser, error) {
 	var tgUsers []domain.TelegramUser
 
-	cursor, err := r.tgUserCollection.Find(context.Background(),
-		bson.D{})
-	//bson.D{
-	//	{"item", bson.D{
-	//		{"$exists", false},
-	//	}})
+	cursor, err := r.tgUserCollection.Find(context.Background(), bson.D{})
 
 	if err != nil {
-		return tgUsers, nil
+		return nil, err
 	}
 
 	err = cursor.All(context.Background(), &tgUsers)
-
 	if err != nil {
-		return tgUsers, nil
+		return nil, err
 	}
 
 	return tgUsers, nil

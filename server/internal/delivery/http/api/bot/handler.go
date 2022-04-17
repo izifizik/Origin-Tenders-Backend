@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"math/rand"
 	"net/http"
 	"origin-tender-backend/server/internal/delivery/http/api"
@@ -43,30 +42,17 @@ func CORSMiddleware() gin.HandlerFunc {
 
 func (h *handler) Register(router *gin.Engine) {
 	router.Use(CORSMiddleware())
-	router.POST("/bot/generateToken", func(context *gin.Context) {
-		h.GenerateToken(context)
-	})
-	router.POST("/bot/generateToken2", func(context *gin.Context) {
-		h.GenerateToken2(context, h.botService)
-	})
+	router.POST("/bot/generateToken2", h.GenerateToken)
+
+	router.POST("/order", h.CreateOrder)
 	router.GET("/tenders", h.GetTenders)
 	router.GET("/tender/:tender_id", h.GetTender)
-	router.GET("/user/:uuid", h.GetUser)
-	router.POST("/bot/set_options")
 
-	router.GET("/ws/bets/:id", Bets)
-	router.GET("/ws/notify/:id", Notify)
-	router.GET("/ws/session/:id", Session)
-	//router.POST("/bot/proofToken")
+	router.GET("/ws/bets/:id", h.Bets)
+	router.GET("/ws/notify/:id", h.Notify)
+	router.GET("/ws/session/:id", h.Session)
 
-	router.POST("/order", func(context *gin.Context) {
-		h.CreateOrder(context, h.botService)
-	})
-
-	router.POST("/test/event", func(context *gin.Context) {
-		h.RaiseEvent(context, h.botService)
-	})
-
+	router.POST("/test/event", h.RaiseEvent)
 }
 
 func (h *handler) SetupBot(c *gin.Context) {
@@ -83,110 +69,88 @@ func (h *handler) SetupBot(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
-func (h *handler) RaiseEvent(c *gin.Context, s botService.BotService) {
+func (h *handler) RaiseEvent(c *gin.Context) {
 	var event domain.ServiceEvent
-	c.ShouldBindJSON(&event)
+	err := c.ShouldBindJSON(&event)
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
 
 	if event.Type == "tender" {
 		var tender domain.Tender
-		err := json.Unmarshal([]byte(event.Data), &tender)
+		err = json.Unmarshal([]byte(event.Data), &tender)
 		if err != nil {
 			fmt.Println(err)
 		}
 		//fmt.Println(tender.Name)
 
-		users, err := s.GetTgUsers()
+		users, err := h.botService.GetTgUsers()
+		if err != nil {
+			fmt.Println(err.Error())
+			c.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
+		fmt.Println(len(users))
 
 		for _, u := range users {
-			err := actions.SendAcceptParticipationInTender(u.UserId, tender)
+			err = actions.SendAcceptParticipationInTender(u.UserId, tender)
 			if err != nil {
 				fmt.Println(err)
 			}
 		}
 
+		err = h.botService.CreateTender(tender)
 		if err != nil {
-			fmt.Println(err)
-		} else {
-			fmt.Println(len(users))
+			fmt.Println(err.Error())
+			c.AbortWithStatus(http.StatusInternalServerError)
+			return
 		}
-
-		s.CreateTender(tender)
 
 		wsActions.NotifyAllSession("sess")
-
-	} else if event.Type == "order" {
-		var order domain.Order
-		err := json.Unmarshal([]byte(event.Data), &order)
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		err = s.CreateOrder(order)
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		orderData, err := json.Marshal(order)
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		//TODO: do stuff
-
-		wsActions.NotifyUser(string(orderData), order.UserId)
-		wsActions.NotifyAllBet(string(orderData))
-
+		c.Status(http.StatusOK)
+		return
 	}
+
+	var order domain.Order
+	err = json.Unmarshal([]byte(event.Data), &order)
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	err = h.botService.CreateOrder(order)
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	orderData, err := json.Marshal(order)
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	wsActions.NotifyUser(string(orderData), order.UserId)
+	wsActions.NotifyAllBet(string(orderData))
 
 }
 
-func (h *handler) CreateOrder(c *gin.Context, s botService.BotService) {
+func (h *handler) CreateOrder(c *gin.Context) {
 	var order domain.Order
 	err := c.ShouldBindJSON(&order)
 	if err != nil {
-		fmt.Println(err)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
 	}
 
-	err = s.CreateOrder(order)
+	err = h.botService.CreateOrder(order)
 	if err != nil {
-		fmt.Println(err)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
 	}
 
-	c.JSON(200, gin.H{})
-}
-
-// какую статистику стоит показывать по тендерам в которых учавствует бот от /tenders
-// это активные тендеры бота
-
-func (h *handler) GetUser(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"ID":      primitive.NewObjectID(),
-		"Name":    "Тетя Вася",
-		"Filters": []string{"filter1", "filter2"},
-		"TendersHistory": []domain.Tender{
-			{
-				ID:           "1",
-				Name:         "Tender1",
-				TimeEnd:      time.Now().Add(time.Hour * 24),
-				Description:  "asdasdasdasd asd as da sd asd ",
-				Filters:      []string{"tag1", "tag2"},
-				StartPrice:   123123123.123,
-				CurrentPrice: 1.11,
-				Status:       "Open??? nujen li on",
-				StepPercent:  0.5,
-			}, {
-				ID:           "2",
-				Name:         "Tender2",
-				TimeEnd:      time.Now().Add(time.Hour * 24),
-				Description:  "asdasdasdasd asd as da sd asd ",
-				Filters:      []string{"tag1", "tag2"},
-				StartPrice:   123123123.123,
-				CurrentPrice: 1.11,
-				Status:       "Open??? nujen li on",
-				StepPercent:  0.5,
-			},
-		},
-	})
+	c.Status(200)
 }
 
 func (h *handler) GetTender(c *gin.Context) {
@@ -271,8 +235,7 @@ func (h *handler) GetTenders(c *gin.Context) {
 	})
 }
 
-func (h *handler) GenerateToken2(c *gin.Context, s botService.BotService) {
-	// принимает тип(ник\груп айди)
+func (h *handler) GenerateToken(c *gin.Context) {
 	var dto TokenDTO
 	err := c.ShouldBindJSON(&dto)
 	if err != nil {
@@ -280,55 +243,18 @@ func (h *handler) GenerateToken2(c *gin.Context, s botService.BotService) {
 		return
 	}
 
-	//token := h.botService.GenerateToken(dto.Type)
 	rand.Seed(time.Now().Unix())
 
 	seed := strconv.Itoa(rand.Int())
 
-	user, err := s.GetSiteUserByName(dto.Value)
+	user, err := h.botService.GetSiteUserByName(dto.Value)
 
-	err = s.CreateTgToken(user.Name, seed, user.ID)
-
+	err = h.botService.CreateTgToken(user.Name, seed, user.ID)
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{
 		"token": seed,
 	})
-	// отдает токен
 }
-
-func (h *handler) GenerateToken(c *gin.Context) {
-	// принимает тип(ник\груп айди)
-	var user domain.User
-	err := c.ShouldBindJSON(&user)
-	if err != nil {
-		c.AbortWithStatus(http.StatusBadRequest)
-		return
-	}
-	var dto TokenDTO
-
-	err = c.ShouldBindJSON(&dto)
-	if err != nil {
-		c.AbortWithStatus(http.StatusBadRequest)
-		return
-	}
-
-	//token := h.botService.GenerateToken(dto.Type)
-	rand.Seed(time.Now().Unix())
-	c.JSON(http.StatusOK, gin.H{
-		"token": rand.Int(),
-	})
-	// отдает токен
-}
-
-//func (h *handler) ProofToken(c *gin.Context) {
-//	var dto TokenProofDTO
-//
-//	err := c.ShouldBindJSON(&dto)
-//	if err != nil {
-//		c.AbortWithStatus(http.StatusBadRequest)
-//		return
-//	}
-//
-//	//err := h.botService.ProofToken(dto.ID, dto.Token)
-//
-//	c.JSON()
-//}

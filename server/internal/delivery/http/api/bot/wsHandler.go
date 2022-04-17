@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"log"
+	"net/http"
 	"origin-tender-backend/websocket/wsModels"
 )
 
@@ -13,53 +14,25 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-//func (h *handler) NotificationWS(c *gin.Context) {
-//	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
-//	if err != nil {
-//		log.Println(err.Error())
-//		return
-//	}
-//	// go + уведы в тг бота
-//	h.botService.SentNotification(conn)
-//}
-
-func initRead(c *gin.Context) (*websocket.Conn, error) {
+func (h *handler) initRead(c *gin.Context) (*websocket.Conn, error) {
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
-		log.Println(err)
-		return conn, err
+		log.Println("error with ws connect: " + err.Error())
+		return nil, err
 	}
 
 	return conn, nil
 }
 
-func Notification(c *gin.Context) {
+func (h *handler) Notify(c *gin.Context) {
 
 	userId := c.Param("id")
 
-	conn, err := initRead(c)
+	conn, err := h.initRead(c)
 	if err != nil {
-		fmt.Println(err)
-	}
-
-	if userId != "" {
-		wsModels.UserConnections[userId] = wsModels.WsConnections{
-			Bets:         wsModels.UserConnections[userId].Bets,
-			Session:      wsModels.UserConnections[userId].Session,
-			Notification: conn,
-		}
-		conn.WriteMessage(1, []byte("ok"))
-	}
-
-}
-
-func Notify(c *gin.Context) {
-
-	userId := c.Param("id")
-
-	conn, err := initRead(c)
-	if err != nil {
-		fmt.Println(err)
+		fmt.Println(err.Error())
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
 	}
 
 	if userId != "" {
@@ -74,13 +47,15 @@ func Notify(c *gin.Context) {
 
 }
 
-func Bets(c *gin.Context) {
+func (h *handler) Bets(c *gin.Context) {
 
 	userId := c.Param("id")
 
-	conn, err := initRead(c)
+	conn, err := h.initRead(c)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(err.Error())
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
 	}
 
 	if userId != "" {
@@ -92,16 +67,16 @@ func Bets(c *gin.Context) {
 
 		conn.WriteMessage(1, []byte("ok"))
 	}
-
 }
 
-func Session(c *gin.Context) {
-
+func (h *handler) Session(c *gin.Context) {
 	userId := c.Param("id")
 
-	conn, err := initRead(c)
+	conn, err := h.initRead(c)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(err.Error())
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
 	}
 
 	if userId != "" {
@@ -113,5 +88,4 @@ func Session(c *gin.Context) {
 
 		conn.WriteMessage(1, []byte("ok"))
 	}
-
 }

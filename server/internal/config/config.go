@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
+	"os"
 	"sync"
 	"time"
 )
@@ -42,17 +43,21 @@ func NewConfig() Config {
 		instance.App.Port = "8080"
 		instance.App.Host = "0.0.0.0"
 		mongoURI := "mongodb://10.10.117.179:27017"
-		mongoTokenProofCollection := "token-proof"
+		mongoTokenProofCollection := os.Getenv("TPCOLLECTION")
+		mongoBotCollection := os.Getenv("BOTCOLLECTION")
+		mongoTelegramUsersCollection := os.Getenv("TGUSERSCOLLECTION")
+		mongoUsersCollection := os.Getenv("USERSCOLLECTION")
+		mongoTendersCollection := os.Getenv("TENDERSCOLLECTION")
+		mongoOrdersCollection := os.Getenv("ORDERSCOLLECTION")
 
 		instance.Database.Client, err = mongoConnection(mongoURI)
 		instance.Database.TPCollection = instance.Database.Client.Database("Origin-Tenders").Collection(mongoTokenProofCollection)
-
-		instance.Database.BotCollection = instance.Database.Client.Database("Origin-Tenders").Collection("Bot")
-		instance.Database.TgUserCollection = instance.Database.Client.Database("Origin-Tenders").Collection("TelegramUsers")
-		instance.Database.ProofTokenCollection = instance.Database.Client.Database("Origin-Tenders").Collection("token-proof")
-		instance.Database.UserCollection = instance.Database.Client.Database("Origin-Tenders").Collection("Users")
-		instance.Database.TenderCollection = instance.Database.Client.Database("Origin-Tenders").Collection("tenders")
-		instance.Database.OrderCollection = instance.Database.Client.Database("Origin-Tenders").Collection("orders")
+		instance.Database.BotCollection = instance.Database.Client.Database("Origin-Tenders").Collection(mongoBotCollection)
+		instance.Database.TgUserCollection = instance.Database.Client.Database("Origin-Tenders").Collection(mongoTelegramUsersCollection)
+		instance.Database.ProofTokenCollection = instance.Database.Client.Database("Origin-Tenders").Collection(mongoTokenProofCollection)
+		instance.Database.UserCollection = instance.Database.Client.Database("Origin-Tenders").Collection(mongoUsersCollection)
+		instance.Database.TenderCollection = instance.Database.Client.Database("Origin-Tenders").Collection(mongoTendersCollection)
+		instance.Database.OrderCollection = instance.Database.Client.Database("Origin-Tenders").Collection(mongoOrdersCollection)
 	})
 	return instance
 }

@@ -1,18 +1,13 @@
 package botService
 
 import (
-	"crypto/md5"
-	"encoding/binary"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/websocket"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"io"
 	"log"
-	"math/rand"
 	"origin-tender-backend/server/internal/domain"
 	"origin-tender-backend/server/internal/repository/mongodb"
-	"strconv"
 	"time"
 )
 
@@ -31,7 +26,10 @@ func (s *service) BotSetup(id, tenderID, alg, tpe string, procent, minimal, crit
 	case "to_small":
 		if tpe == "standard" {
 			for { // правильно конечно делать это с получением извне но и фор пока что тоже выглядит не плохо ))))))))))))))))))))))))))))))))))))))))))))))))))))))))
-				tender := s.repo.GetTenderByID(tenderID)
+				tender, err := s.repo.GetTenderByID(tenderID)
+				if err != nil {
+					continue
+				}
 				if tender.Owner == id {
 					time.Sleep(time.Second * 4)
 					continue
@@ -51,7 +49,7 @@ func (s *service) BotSetup(id, tenderID, alg, tpe string, procent, minimal, crit
 					Price:      updatePrice,
 				}
 
-				err := s.repo.CreateOrder(order)
+				err = s.repo.CreateOrder(order)
 				if err != nil {
 					fmt.Println("error with order create: " + err.Error())
 					continue
@@ -62,7 +60,10 @@ func (s *service) BotSetup(id, tenderID, alg, tpe string, procent, minimal, crit
 		}
 
 		for {
-			tender := s.repo.GetTenderByID(tenderID)
+			tender, err := s.repo.GetTenderByID(tenderID)
+			if err != nil {
+				continue
+			}
 			if tender.Owner == id {
 				time.Sleep(4 * time.Second)
 				continue
@@ -89,7 +90,7 @@ func (s *service) BotSetup(id, tenderID, alg, tpe string, procent, minimal, crit
 				Price:      updatePrice,
 			}
 
-			err := s.repo.CreateOrder(order)
+			err = s.repo.CreateOrder(order)
 			if err != nil {
 				fmt.Println("error with order create: " + err.Error())
 				continue
@@ -101,7 +102,10 @@ func (s *service) BotSetup(id, tenderID, alg, tpe string, procent, minimal, crit
 			break
 		}
 		for {
-			tender := s.repo.GetTenderByID(tenderID)
+			tender, err := s.repo.GetTenderByID(tenderID)
+			if err != nil {
+				continue
+			}
 
 			if tender.Owner == id {
 				time.Sleep(4 * time.Minute)
@@ -118,7 +122,7 @@ func (s *service) BotSetup(id, tenderID, alg, tpe string, procent, minimal, crit
 				Price:      updatePrice,
 			}
 
-			err := s.repo.CreateOrder(order)
+			err = s.repo.CreateOrder(order)
 			if err != nil {
 				fmt.Println("error with order create: " + err.Error())
 				continue
@@ -127,7 +131,10 @@ func (s *service) BotSetup(id, tenderID, alg, tpe string, procent, minimal, crit
 		}
 	case "curr_procent":
 		for {
-			tender := s.repo.GetTenderByID(tenderID)
+			tender, err := s.repo.GetTenderByID(tenderID)
+			if err != nil {
+				continue
+			}
 
 			if tender.Owner == id {
 				time.Sleep(4 * time.Second)
@@ -147,7 +154,7 @@ func (s *service) BotSetup(id, tenderID, alg, tpe string, procent, minimal, crit
 				Price:      updatePrice,
 			}
 
-			err := s.repo.CreateOrder(order)
+			err = s.repo.CreateOrder(order)
 			if err != nil {
 				fmt.Println("error with order create: " + err.Error())
 				continue
@@ -180,30 +187,7 @@ func (s *service) GetSiteUserByName(name string) (domain.User, error) {
 	return s.repo.GetSiteUserByName(name)
 }
 
-func (s *service) CreateSiteUser(user domain.User) error {
-	return s.repo.CreateSiteUser(user)
-}
-
-// siteId - User collection ObjectId
 func (s *service) CreateTgToken(name string, token string, siteId primitive.ObjectID) error {
+	// siteId - User collection ObjectId
 	return s.repo.CreateToken(name, token, siteId)
 }
-
-func (s *service) GenerateToken(ID string) string {
-	h := md5.New()
-	io.WriteString(h, ID)
-	token := generateToken(binary.BigEndian.Uint64(h.Sum(nil)))
-	s.repo.SaveToken(ID, token)
-	return token
-}
-
-func (s *service) ProofToken(ID string, token string) error {
-	return s.repo.ProofToken(ID, token)
-}
-
-func generateToken(seed uint64) string {
-	rand.Seed(int64(seed))
-	return strconv.Itoa(rand.Int())
-}
-
-//func (s *service) StartServeTendor()

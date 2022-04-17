@@ -21,31 +21,12 @@ type repo struct {
 }
 
 func NewRepo(client *mongo.Client, tpCollection, userCollection, proofTokenCollection,
-	tgUserCollection, tenderCollection *mongo.Collection,
-	ordersCollection *mongo.Collection, botCollection *mongo.Collection) Repository {
+	tgUserCollection, tenderCollection,
+	ordersCollection, botCollection *mongo.Collection) Repository {
 	return &repo{
 		client, tpCollection, userCollection,
 		proofTokenCollection, tgUserCollection,
 		tenderCollection, ordersCollection, botCollection,
-	}
-}
-
-func (r repo) CreateBotByID(id, tenderId string, stepPercent, criticalPrice float64, isNeedApprove bool) {
-	userId, err := primitive.ObjectIDFromHex(id)
-	filter := bson.M{"_id": userId}
-	var user domain.User
-	err = r.userCollection.FindOne(context.Background(), filter).Decode(&user)
-	if err != nil {
-		fmt.Println("error to take user from bd: " + err.Error())
-		return
-	}
-	//tender, err := primitive.ObjectIDFromHex(tenderId)
-	//user.Bot = append(user.Bot, domain.Bot{TenderID: tender, StepPercent: stepPercent, CriticalPrice: criticalPrice, IsNeedApprove: isNeedApprove})
-
-	_, err = r.userCollection.UpdateOne(context.Background(), filter, user)
-	if err != nil {
-		fmt.Println("error to take user from bd: " + err.Error())
-		return
 	}
 }
 
@@ -74,7 +55,7 @@ func (r repo) GetUserByTgId(id int64) (domain.TelegramUser, error) {
 	}).Decode(&tgUser)
 
 	if err != nil {
-		return tgUser, nil
+		return tgUser, err
 	}
 
 	return tgUser, nil
@@ -86,9 +67,8 @@ func (r repo) GetTgUser(name string) (domain.TelegramUser, string, error) {
 	err := r.tgUserCollection.FindOne(context.Background(), bson.D{
 		{"name", name},
 	}).Decode(&tgUser)
-
 	if err != nil {
-		return tgUser, "db error", nil
+		return tgUser, "db error", err
 	}
 
 	return tgUser, "ok", nil
@@ -102,19 +82,19 @@ func (r repo) CreateNewTgUser(id int64, name string, token string) (domain.Teleg
 	err := r.tgUserCollection.FindOne(context.Background(), bson.D{
 		{"userId", id},
 	}).Decode(&tgUser)
-
 	if err != nil {
-		fmt.Println(tgUser, "db error", nil)
+		fmt.Println(tgUser, "db error: "+err.Error())
+		return tgUser, "db error: " + err.Error(), err
 	}
 
-	_, err2 := r.tgUserCollection.InsertOne(context.Background(), bson.D{
+	_, err = r.tgUserCollection.InsertOne(context.Background(), bson.D{
 		{"userId", id},
 		{"name", name},
 		{"token", token},
 	})
 
-	if err2 != nil {
-		return tgUser, "db error", nil
+	if err != nil {
+		return tgUser, "db error: " + err.Error(), err
 	}
 
 	return tgUser, "success", nil
@@ -123,14 +103,16 @@ func (r repo) CreateNewTgUser(id int64, name string, token string) (domain.Teleg
 func (r repo) SetUserNameById(idStr string, name string) error {
 	var tgUser domain.TelegramUser
 
-	id, _ := primitive.ObjectIDFromHex(idStr)
+	id, err := primitive.ObjectIDFromHex(idStr)
+	if err != nil {
+		return err
+	}
 	filter := bson.D{{"_id", id}}
 	update := bson.D{{"$set", bson.D{{"name", name}}}}
 
-	_, err := r.tgUserCollection.UpdateOne(context.Background(), filter, update)
-
+	_, err = r.tgUserCollection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
-		fmt.Println(tgUser, "db error", nil)
+		fmt.Println(tgUser, "db error: "+err.Error())
 	}
 
 	return err
@@ -139,14 +121,16 @@ func (r repo) SetUserNameById(idStr string, name string) error {
 func (r repo) SetSiteId(siteId string, idStr string) error {
 	var tgUser domain.TelegramUser
 
-	id, _ := primitive.ObjectIDFromHex(idStr)
+	id, err := primitive.ObjectIDFromHex(idStr)
+	if err != nil {
+		return err
+	}
 	filter := bson.D{{"_id", id}}
 	update := bson.D{{"$set", bson.D{{"siteId", siteId}}}}
 
-	_, err := r.tgUserCollection.UpdateOne(context.Background(), filter, update)
-
+	_, err = r.tgUserCollection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
-		fmt.Println(tgUser, "db error", nil)
+		fmt.Println(tgUser, "db error: "+err.Error())
 	}
 
 	return err
@@ -155,49 +139,35 @@ func (r repo) SetSiteId(siteId string, idStr string) error {
 func (r repo) UpdateUserStateById(idStr string, state string) error {
 	var tgUser domain.TelegramUser
 
-	id, _ := primitive.ObjectIDFromHex(idStr)
+	id, err := primitive.ObjectIDFromHex(idStr)
+	if err != nil {
+		return err
+	}
 	filter := bson.D{{"_id", id}}
 	update := bson.D{{"$set", bson.D{{"state", state}}}}
 
-	_, err := r.tgUserCollection.UpdateOne(context.Background(), filter, update)
-
+	_, err = r.tgUserCollection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
-		fmt.Println(tgUser, "db error", nil)
+		fmt.Println(tgUser, "db error: ", err.Error())
 	}
 
 	return err
 }
 
-//func (r repo) UpdateUserState(id int64, state string) error {
-//	r.tpCollection.UpdateByID(context.Background(), bson.D{
-//		{""},
-//	})
-//}
-
-//func (r repo) ProofToken(ctx context.Context, ID string, file string) (bool, error) {
-//	filter := bson.M{"tg": name}
-//
-//	err := clubsCollection.FindOne(context.Background(), filter).Decode(&club)
-//	if err != nil {
-//		fmt.Println(err)
-//		return model.Club{}
-//	}
-//	return club
-//}
-
 func (r repo) CreateToken(name string, token string, siteId primitive.ObjectID) error {
-
 	var proofedToken domain.ProofToken
 
-	r.proofTokenCollection.FindOne(context.Background(), bson.D{
+	err := r.proofTokenCollection.FindOne(context.Background(), bson.D{
 		{"name", name},
 	}).Decode(&proofedToken)
-
+	if err != nil {
+		return err
+	}
 	if proofedToken.Id != "" {
 		r.proofTokenCollection.DeleteOne(context.Background(), bson.M{"name": name})
 	}
 
-	_, err := r.proofTokenCollection.InsertOne(context.Background(), bson.D{
+	_, err = r.proofTokenCollection.InsertOne(context.Background(), bson.D{
 		{"name", name},
 		{"token", token},
 		{"siteId", siteId},
