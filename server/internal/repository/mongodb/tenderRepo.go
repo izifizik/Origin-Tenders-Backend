@@ -16,7 +16,7 @@ func (r *repo) CreateTender(tender domain.Tender) error {
 		{"Description", tender.Description},
 		{"StartPrice", tender.StartPrice},
 		{"StartPrice", tender.StartPrice},
-		{"status", "open"},
+		{"status", "Активно"},
 	})
 	if err != nil {
 		fmt.Println("error with create tender: " + err.Error())

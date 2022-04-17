@@ -23,7 +23,8 @@ func (r repo) CreateOrder(order domain.Order) error {
 	filter := bson.M{"_id": userId}
 
 	_, err = r.tendersCollection.UpdateOne(context.Background(), filter,
-		bson.D{{"current_price", order.Price}})
+		bson.D{{"current_price", order.Price},
+			{"owner", order.UserId}})
 
 	// TODO: do stuff, call bot events
 
