@@ -29,6 +29,9 @@ func Run() error {
 	//go websocket.Run()
 
 	router := gin.Default()
+
+	router.StaticFile("/sitetest", "./home.html")
+
 	gin.SetMode(gin.DebugMode)
 	server := &http.Server{
 		Addr:           "0.0.0.0:8080",

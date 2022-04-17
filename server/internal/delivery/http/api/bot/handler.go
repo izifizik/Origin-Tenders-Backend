@@ -4,9 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"log"
 	"math/rand"
 	"net/http"
 	"origin-tender-backend/server/internal/delivery/http/api"
@@ -55,7 +53,9 @@ func (h *handler) Register(router *gin.Engine) {
 	router.GET("/tender/:tender_id", h.GetTender)
 	router.GET("/user/:uuid", h.GetUser)
 	router.POST("/bot/set_options")
-	router.GET("/ws/notification", h.NotificationWS)
+	router.GET("/ws/notification/:id", Notification)
+	router.GET("/ws/bets/:id", Bets)
+	router.GET("/ws/session/:id", Session)
 	//router.POST("/bot/proofToken")
 
 	router.POST("/order", func(context *gin.Context) {
@@ -137,21 +137,6 @@ func (h *handler) RaiseEvent(c *gin.Context, s botService.BotService) {
 
 	}
 
-}
-
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-}
-
-func (h *handler) NotificationWS(c *gin.Context) {
-	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
-	if err != nil {
-		log.Println(err.Error())
-		return
-	}
-	// go + уведы в тг бота
-	h.botService.SentNotification(conn)
 }
 
 func (h *handler) CreateOrder(c *gin.Context, s botService.BotService) {
