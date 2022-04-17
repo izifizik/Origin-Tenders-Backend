@@ -2,16 +2,22 @@ package mongodb
 
 import (
 	"context"
+	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"origin-tender-backend/server/internal/domain"
 )
 
 func (r repo) CreateOrder(order domain.Order) error {
-	_, err := r.ordersCollection.InsertOne(context.Background(), order)
+	res, err := r.ordersCollection.InsertOne(context.Background(), order)
 	if err != nil {
 		return err
 	}
+
+	fmt.Println(res.InsertedID)
+
+	//id := string([]byte(res.InsertedID))
+	//fmt.Println(id)
 
 	return err
 }
