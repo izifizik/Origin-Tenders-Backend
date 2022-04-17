@@ -15,6 +15,7 @@ type BotService interface {
 	CreateTgToken(name string, token string, siteId primitive.ObjectID) error
 
 	CreateTender(tender domain.Tender) error
+	GetTenderOrders(tenderId string) ([]domain.Order, error)
 
 	BotSetup(id, tenderID, alg, tpe string, procent, minimal, critical float64, isApprove bool)
 }

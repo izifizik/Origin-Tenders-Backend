@@ -18,14 +18,13 @@ func (r repo) CreateOrder(order domain.Order) error {
 	}
 	filter := bson.M{"_id": userId}
 
-	_, err = r.tendersCollection.UpdateOne(context.Background(), filter,
-		bson.D{{"current_price", order.Price},
-			{"owner", order.UserId}})
-	if err != nil {
-		return err
-	}
+	tender, err := r.GetTenderByID(order.TenderId)
 
-	return nil
+	tender.CurrentPrice = order.Price
+
+	err = r.UpdateTender(filter, tender)
+
+	return err
 }
 
 func (r repo) GetOrderById(objectId string) (domain.Order, error) {
@@ -37,7 +36,7 @@ func (r repo) GetOrderById(objectId string) (domain.Order, error) {
 	filter := bson.M{"_id": userId}
 	err = r.ordersCollection.FindOne(context.Background(), filter).Decode(&order)
 	if err != nil {
-		return domain.Order{}, err
+		return order, err
 	}
 
 	return order, nil

@@ -6,32 +6,32 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"origin-tender-backend/server/internal/domain"
-	"time"
+	"origin-tender-backend/server/internal/service/teleg-bot-service/actions"
 )
 
 func (r *repo) CreateTender(tender domain.Tender) error {
-	tenderID, err := primitive.ObjectIDFromHex(tender.ID)
-	if err != nil {
-		return err
-	}
-	_, err = r.tendersCollection.InsertOne(context.Background(), bson.D{
-		{"_id", tenderID},
-		{"time_end", time.Now().Add(time.Hour * 24)},
-		{"name", tender.Name},
-		{"description", tender.Description},
-		{"short_description", tender.ShortDescription},
-		{"owner", tender.Owner},
-		{"filters", tender.Filters},
-		{"StartPrice", tender.StartPrice},
-		{"current_price", tender.StartPrice},
-		{"status", "Активно"},
-		{"step_percent", tender.StepPercent},
-	})
+
+	_, err := r.tendersCollection.InsertOne(context.Background(), tender)
 	if err != nil {
 		fmt.Println("error with create tender: " + err.Error())
 		return err
 	}
 	return nil
+}
+
+func (r *repo) UpdateTender(filter interface{}, tender domain.Tender) error {
+	_, err := r.tendersCollection.UpdateOne(context.Background(), filter, tender)
+
+	return err
+}
+
+func NotificateTenderChange(tender domain.Tender) {
+	var users []domain.TelegramUser
+
+	for _, user := range users {
+		actions.NotificateTenderChange(user.UserId, tender)
+	}
+
 }
 
 func (r *repo) GetTenderByID(id string) (domain.Tender, error) {
