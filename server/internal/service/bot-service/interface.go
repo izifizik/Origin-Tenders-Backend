@@ -7,6 +7,7 @@ import (
 
 type BotService interface {
 	CreateOrder(order domain.Order) error
+	UpdateTender(tenderId string, tender domain.Tender) error
 
 	GetTgUsers() ([]domain.TelegramUser, error)
 

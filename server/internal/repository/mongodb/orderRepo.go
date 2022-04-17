@@ -12,17 +12,6 @@ func (r repo) CreateOrder(order domain.Order) error {
 	if err != nil {
 		return err
 	}
-	userId, err := primitive.ObjectIDFromHex(order.TenderId)
-	if err != nil {
-		return err
-	}
-	filter := bson.M{"_id": userId}
-
-	tender, err := r.GetTenderByID(order.TenderId)
-
-	tender.CurrentPrice = order.Price
-
-	err = r.UpdateTender(filter, tender)
 
 	return err
 }

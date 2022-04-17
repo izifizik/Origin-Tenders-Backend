@@ -6,7 +6,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"origin-tender-backend/server/internal/domain"
-	"origin-tender-backend/server/internal/service/teleg-bot-service/actions"
 )
 
 func (r *repo) CreateTender(tender domain.Tender) error {
@@ -19,24 +18,18 @@ func (r *repo) CreateTender(tender domain.Tender) error {
 	return nil
 }
 
-func (r *repo) UpdateTender(filter interface{}, tender domain.Tender) error {
-	_, err := r.tendersCollection.UpdateOne(context.Background(), filter, bson.D{{"$set",
-		bson.D{
-			{"current_price", tender.CurrentPrice},
-			{"status", tender.Status},
-		},
-	}})
+func (r *repo) UpdateTender(tenderId string, tender domain.Tender) error {
+	id, _ := primitive.ObjectIDFromHex(tenderId)
+	_, err := r.tendersCollection.UpdateOne(context.Background(),
+		bson.M{"_id": id},
+		bson.D{{"$set",
+			bson.D{
+				{"current_price", tender.CurrentPrice},
+				{"status", tender.Status},
+			},
+		}})
 
 	return err
-}
-
-func NotificateTenderChange(tender domain.Tender) {
-	var users []domain.TelegramUser
-
-	for _, user := range users {
-		actions.NotificateTenderChange(user.UserId, tender)
-	}
-
 }
 
 func (r *repo) GetTenderByID(id string) (domain.Tender, error) {
