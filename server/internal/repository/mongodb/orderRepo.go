@@ -6,9 +6,11 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"origin-tender-backend/server/internal/domain"
+	"time"
 )
 
 func (r repo) CreateOrder(order domain.Order) error {
+	order.TimeStamp = time.Now()
 	res, err := r.ordersCollection.InsertOne(context.Background(), order)
 	if err != nil {
 		return err
