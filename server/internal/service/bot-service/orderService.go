@@ -19,6 +19,7 @@ func (s *service) CreateOrder(order domain.Order) error {
 
 	data, err := json.Marshal(&order)
 	wsActions.NotifyAllBet(string(data))
+	wsActions.NotifyUser(string(data), order.UserId)
 
 	err = s.UpdateTender(order.TenderId, tender)
 	if err != nil {

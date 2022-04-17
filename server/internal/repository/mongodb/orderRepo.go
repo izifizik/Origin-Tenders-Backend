@@ -37,7 +37,8 @@ func (r repo) GetTenderOrders(tenderId string) ([]domain.Order, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = c.All(context.Background(), orders)
+
+	err = c.All(context.Background(), &orders)
 	if err != nil {
 		return nil, err
 	}
