@@ -10,7 +10,7 @@ import (
 	"origin-tender-backend/server/internal/domain"
 	botService "origin-tender-backend/server/internal/service/bot-service"
 	"origin-tender-backend/server/internal/service/teleg-bot-service/actions"
-	"origin-tender-backend/websocket/wsActions"
+	"origin-tender-backend/server/internal/service/wsActions"
 	"strconv"
 	"time"
 )

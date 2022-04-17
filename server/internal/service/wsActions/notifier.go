@@ -1,6 +1,8 @@
 package wsActions
 
-import "origin-tender-backend/websocket/wsModels"
+import (
+	"origin-tender-backend/server/internal/domain/wsModels"
+)
 
 //func NotifyAllNotifiers(data string) {
 //	for _, conns := range wsModels.UserConnections {

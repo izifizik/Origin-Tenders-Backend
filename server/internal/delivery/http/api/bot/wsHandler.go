@@ -6,7 +6,7 @@ import (
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
-	"origin-tender-backend/websocket/wsModels"
+	"origin-tender-backend/server/internal/domain/wsModels"
 )
 
 var upgrader = websocket.Upgrader{

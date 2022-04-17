@@ -11,10 +11,15 @@
 
 </body>
 <script>
+
+    let betsConn;
+    let betsSessions;
+    let betsNotifs;
+
     window.onload = () => {
-        let betsConn = new WebSocket('ws://localhost:8080/ws/bets/123')
-        let betsNotifs = new WebSocket('ws://localhost:8080/ws/notify/123')
-        let betsSessions = new WebSocket('ws://localhost:8080/ws/session/123')
+        betsConn = new WebSocket('ws://localhost:8080/ws/bets/123');
+        betsSessions = new WebSocket('ws://localhost:8080/ws/session/123');
+        betsNotifs = new WebSocket('ws://localhost:8080/ws/notify/123');
 
         // betsConn.onopen = () => {
         //     betsConn.send("123")
