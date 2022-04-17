@@ -1,0 +1,13 @@
+{
+  "_id": "625b288a80da24bdc5a15534",
+  "timeEnd": "0001-01-01T00:00:00Z",
+  "name": "Покупка разеток тип С",
+  "description": "",
+  "short_description": "",
+  "owner": "",
+  "filters": null,
+  "startPrice": 0,
+  "currentPrice": 12.3,
+  "status": "open",
+  "step_percent": 0
+}

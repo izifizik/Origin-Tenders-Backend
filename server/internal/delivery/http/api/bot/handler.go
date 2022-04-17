@@ -174,18 +174,29 @@ func (h *handler) CreateOrder(c *gin.Context) {
 }
 
 func (h *handler) GetTender(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"id":                c.Param("tender_id"),
-		"name":              "Закуп пиломатериала из древесины",
-		"time_end":          time.Now().Add(time.Hour * 24),
-		"description":       "Древесина хвойных пород не ниже 3 сорта по ГОСТ 8486 и не ниже 2 сорта лиственных пород по ГОСТ 2695",
-		"short_description": "Брус, доска обрезная /необрезная. Количество пиломатериала - 500 тыс.",
-		"filters":           []string{"Фильтр по цене"},
-		"start_price":       2300050.50,
-		"current_price":     2145600.45,
-		"status":            "Активна",
-		"step_percent":      0.5,
-	})
+
+	tenderId := c.Param("tender_id")
+
+	tender, err := h.botService.GetTenderByID(tenderId)
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	c.JSON(200, tender)
+
+	//c.JSON(http.StatusOK, gin.H{
+	//	"id":                c.Param("tender_id"),
+	//	"name":              "Закуп пиломатериала из древесины",
+	//	"time_end":          time.Now().Add(time.Hour * 24),
+	//	"description":       "Древесина хвойных пород не ниже 3 сорта по ГОСТ 8486 и не ниже 2 сорта лиственных пород по ГОСТ 2695",
+	//	"short_description": "Брус, доска обрезная /необрезная. Количество пиломатериала - 500 тыс.",
+	//	"filters":           []string{"Фильтр по цене"},
+	//	"start_price":       2300050.50,
+	//	"current_price":     2145600.45,
+	//	"status":            "Активна",
+	//	"step_percent":      0.5,
+	//})
 }
 
 func (h *handler) GetTenders(c *gin.Context) {

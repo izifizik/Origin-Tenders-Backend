@@ -51,6 +51,7 @@ func NewConfig() Config {
 		mongoOrdersCollection := os.Getenv("ORDERSCOLLECTION")
 		// не удаляй, просто комменть
 		mongoOrdersCollection = "orders"
+		mongoTendersCollection = "tenders"
 
 		instance.Database.Client, err = mongoConnection(mongoURI)
 		instance.Database.TPCollection = instance.Database.Client.Database("Origin-Tenders").Collection(mongoTokenProofCollection)

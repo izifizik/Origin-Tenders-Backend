@@ -12,6 +12,10 @@ func (s *service) CreateTender(tender domain.Tender) error {
 	return s.repo.CreateTender(tender)
 }
 
+func (s *service) GetTenderByID(id string) (domain.Tender, error) {
+	return s.repo.GetTenderByID(id)
+}
+
 func (s *service) UpdateTender(tenderId string, tender domain.Tender) error {
 
 	data, err := json.Marshal(&tender)
