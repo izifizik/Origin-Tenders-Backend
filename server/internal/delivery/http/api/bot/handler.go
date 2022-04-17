@@ -110,29 +110,32 @@ func (h *handler) RaiseEvent(c *gin.Context) {
 		wsActions.NotifyAllSession("sess")
 		c.Status(http.StatusOK)
 		return
-	}
+	} else if event.Type == "order" {
 
-	var order domain.Order
-	err = json.Unmarshal([]byte(event.Data), &order)
-	if err != nil {
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
+		var order domain.Order
+		err = json.Unmarshal([]byte(event.Data), &order)
+		if err != nil {
+			c.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
 
-	err = h.botService.CreateOrder(order)
-	if err != nil {
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
+		err = h.botService.CreateOrder(order)
+		if err != nil {
+			c.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
 
-	orderData, err := json.Marshal(order)
-	if err != nil {
-		c.AbortWithStatus(http.StatusInternalServerError)
-		return
-	}
+		orderData, err := json.Marshal(order)
+		if err != nil {
+			c.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
 
-	wsActions.NotifyUser(string(orderData), order.UserId)
-	wsActions.NotifyAllBet(string(orderData))
+		wsActions.NotifyUser(string(orderData), order.UserId)
+		wsActions.NotifyAllBet(string(orderData))
+	} else {
+		fmt.Println("uncnown type!")
+	}
 
 }
 

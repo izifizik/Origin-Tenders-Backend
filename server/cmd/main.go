@@ -10,8 +10,6 @@ func main() {
 
 	fmt.Println("!!!")
 
-	//go websocket.Run()
-
 	err := app.Run()
 	if err != nil {
 		log.Fatalln(err.Error())
