@@ -53,8 +53,9 @@ func (h *handler) Register(router *gin.Engine) {
 	router.GET("/tender/:tender_id", h.GetTender)
 	router.GET("/user/:uuid", h.GetUser)
 	router.POST("/bot/set_options")
-	router.GET("/ws/notification/:id", Notification)
+
 	router.GET("/ws/bets/:id", Bets)
+	router.GET("/ws/notify/:id", Notify)
 	router.GET("/ws/session/:id", Session)
 	//router.POST("/bot/proofToken")
 

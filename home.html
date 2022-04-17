@@ -13,7 +13,7 @@
 <script>
     window.onload = () => {
         let betsConn = new WebSocket('ws://localhost:8080/ws/bets/123')
-        let betsNotifs = new WebSocket('ws://localhost:8080/ws/notification/123')
+        let betsNotifs = new WebSocket('ws://localhost:8080/ws/notify/123')
         let betsSessions = new WebSocket('ws://localhost:8080/ws/session/123')
 
         // betsConn.onopen = () => {

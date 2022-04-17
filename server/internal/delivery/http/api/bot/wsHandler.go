@@ -53,6 +53,27 @@ func Notification(c *gin.Context) {
 
 }
 
+func Notify(c *gin.Context) {
+
+	userId := c.Param("id")
+
+	conn, err := initRead(c)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	if userId != "" {
+		wsModels.UserConnections[userId] = wsModels.WsConnections{
+			Bets:         wsModels.UserConnections[userId].Bets,
+			Session:      wsModels.UserConnections[userId].Session,
+			Notification: conn,
+		}
+
+		conn.WriteMessage(1, []byte("ok"))
+	}
+
+}
+
 func Bets(c *gin.Context) {
 
 	userId := c.Param("id")
