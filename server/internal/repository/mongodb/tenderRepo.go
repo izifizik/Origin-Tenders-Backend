@@ -39,14 +39,15 @@ func (r *repo) GetTenderByID(id string) (domain.Tender, error) {
 	tID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		fmt.Println("Error with ObjectIDFromHex")
-		return domain.Tender{}, err
+		return tender, err
 	}
 	filter := bson.M{"_id": tID}
 
 	err = r.tendersCollection.FindOne(context.Background(), filter).Decode(&tender)
 	if err != nil {
 		fmt.Println("Error with get tender")
-		return domain.Tender{}, err
+		return tender, err
 	}
-	return domain.Tender{}, nil
+
+	return tender, nil
 }

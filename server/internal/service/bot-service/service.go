@@ -6,6 +6,7 @@ import (
 	"github.com/gorilla/websocket"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"log"
+	"math/rand"
 	"origin-tender-backend/server/internal/domain"
 	"origin-tender-backend/server/internal/repository/mongodb"
 	"time"
@@ -26,12 +27,14 @@ func (s *service) BotSetup(id, tenderID, alg, tpe string, procent, minimal, crit
 	case "to_small":
 		if tpe == "standard" {
 			for { // правильно конечно делать это с получением извне но и фор пока что тоже выглядит не плохо ))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+				elementOfSurprise := time.Duration(rand.Intn(5))
+
 				tender, err := s.repo.GetTenderByID(tenderID)
 				if err != nil {
 					continue
 				}
 				if tender.Owner == id {
-					time.Sleep(time.Second * 4)
+					time.Sleep(time.Second * (4 + elementOfSurprise))
 					continue
 				}
 
@@ -54,18 +57,20 @@ func (s *service) BotSetup(id, tenderID, alg, tpe string, procent, minimal, crit
 					fmt.Println("error with order create: " + err.Error())
 					continue
 				}
-				time.Sleep(4 * time.Second)
+				time.Sleep(4 * (time.Second + elementOfSurprise))
 			}
 			break
 		}
 
 		for {
+			elementOfSurprise := time.Duration(rand.Intn(5))
+
 			tender, err := s.repo.GetTenderByID(tenderID)
 			if err != nil {
 				continue
 			}
 			if tender.Owner == id {
-				time.Sleep(4 * time.Second)
+				time.Sleep(4*time.Second + elementOfSurprise)
 				continue
 			}
 
@@ -95,20 +100,21 @@ func (s *service) BotSetup(id, tenderID, alg, tpe string, procent, minimal, crit
 				fmt.Println("error with order create: " + err.Error())
 				continue
 			}
-			time.Sleep(4 * time.Second)
+			time.Sleep(4*time.Second + elementOfSurprise)
 		}
 	case "race_win": // подтверждение такого алго отправляется вместе с отправкой настройки и больше никогда
 		if isApprove == false {
 			break
 		}
 		for {
+			elementOfSurprise := time.Duration(rand.Intn(50))
 			tender, err := s.repo.GetTenderByID(tenderID)
 			if err != nil {
 				continue
 			}
 
 			if tender.Owner == id {
-				time.Sleep(4 * time.Minute)
+				time.Sleep(3*time.Minute + elementOfSurprise)
 				continue
 			}
 
