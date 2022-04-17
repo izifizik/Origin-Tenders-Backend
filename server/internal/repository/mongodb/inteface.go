@@ -9,7 +9,7 @@ type Repository interface {
 	CreateTender(tender domain.Tender) error        // ok
 	GetTenderByID(id string) (domain.Tender, error) // ok
 	GetTenderOrders(tenderId string) ([]domain.Order, error)
-	UpdateTender(filter interface{}, tender domain.Tender) error
+	UpdateTender(tenderId string, tender domain.Tender) error
 
 	CreateOrder(order domain.Order) error //ok
 
